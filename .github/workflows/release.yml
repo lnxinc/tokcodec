@@ -57,7 +57,7 @@ jobs:
           tok=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm:registry.npmjs.org" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).value")
           code=$(curl -sS -o /tmp/x.json -w '%{http_code}' -X POST -H "Authorization: Bearer $tok" -H "Content-Type: application/json" https://registry.npmjs.org/-/npm/v1/oidc/token/exchange/package/tokcodec)
           echo "npm OIDC exchange: HTTP $code"
-          [ "$code" = "200" ] || { cat /tmp/x.json; echo; echo "trusted publisher on npmjs.com does not match this workflow"; exit 1; }
+          case "$code" in 200|201) ;; *) cat /tmp/x.json; echo; echo "trusted publisher on npmjs.com does not match this workflow"; exit 1;; esac
       - name: Publish unless this version is already on npm
         run: |
           v=$(node -p "require('./npm/package.json').version")
@@ -68,6 +68,7 @@ jobs:
           fi
   github-release:
     needs: [pypi, npm]
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     permissions:
       contents: write
