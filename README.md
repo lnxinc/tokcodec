@@ -122,9 +122,17 @@ Using Cursor, Codex, Aider or Gemini CLI? tokcodec is a plain stdin/stdout filte
 
 ## How it works
 
-```
-input ─▶ detect kind ─▶ L1 lossless ─▶ L2 light lossy ─▶ L3 heavy lossy ─▶ count tokens
-```
+<p align="center">
+  <img src="assets/how-it-works.svg" alt="Diagram: files and command output flow through tokcodec as a filter into the model's context window; files on disk are never modified" width="900">
+</p>
+
+Three things to know:
+
+1. **It's a filter, not an editor.** tokcodec reads a file or a command's output and writes a shorter version to stdout. Nothing on disk changes. The compressed text exists only on its way into the model's context.
+2. **It shrinks tool results, not your conversation.** In Claude Code, every command output and every file read lands in the context window and on your bill. tokcodec makes those results smaller before they land. Your prompts and Claude's replies are untouched.
+3. **Lossy levels are for reading.** Level 1 is safe for anything. Levels 2 and 3 change whitespace and drop detail, so an agent about to *edit* a file should read it losslessly. The bundled skill tells Claude exactly that.
+
+Under the hood:
 
 - **Python** goes through `ast` and `tokenize`, so a `#` inside a string is never mistaken for a comment and skeletons always parse.
 - **JS/TS** uses a small scanner that tracks strings, template literals and comments while matching braces.

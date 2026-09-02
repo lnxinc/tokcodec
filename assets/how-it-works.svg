@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/></marker>
+    <marker id="arrg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4ade80"/></marker>
+  </defs>
+  <rect width="900" height="500" rx="14" fill="#0f172a"/>
+
+  <text x="450" y="30" fill="#e2e8f0" text-anchor="middle" font-size="15" font-weight="600">tokcodec sits between your tools and the model's context window</text>
+  <text x="450" y="50" fill="#94a3b8" text-anchor="middle">A filter, not an editor. Files on disk never change. Only what the model reads gets smaller.</text>
+
+  <!-- col 1 -->
+  <rect x="24" y="76" width="230" height="300" rx="10" fill="#111827" stroke="#334155"/>
+  <text x="139" y="100" fill="#e2e8f0" text-anchor="middle" font-weight="600" font-size="13">Your repo</text>
+  <text x="139" y="117" fill="#64748b" text-anchor="middle" font-size="11">unchanged, always</text>
+  <g font-family="ui-monospace, Menlo, Consolas, monospace" font-size="11" fill="#cbd5e1">
+    <rect x="38" y="132" width="202" height="24" rx="5" fill="#1e293b"/><text x="48" y="148">argparse.py      2.6k lines</text>
+    <rect x="38" y="164" width="202" height="24" rx="5" fill="#1e293b"/><text x="48" y="180">response.json    120 rows</text>
+    <rect x="38" y="196" width="202" height="24" rx="5" fill="#1e293b"/><text x="48" y="212">$ pytest         2k lines</text>
+    <rect x="38" y="228" width="202" height="24" rx="5" fill="#1e293b"/><text x="48" y="244">$ npm install    900 lines</text>
+  </g>
+  <text x="139" y="290" fill="#64748b" text-anchor="middle" font-size="11">read-only</text>
+  <text x="139" y="322" fill="#94a3b8" text-anchor="middle" font-size="11">Files and command output</text>
+  <text x="139" y="338" fill="#94a3b8" text-anchor="middle" font-size="11">are the raw signal</text>
+
+  <line x1="254" y1="196" x2="316" y2="196" stroke="#94a3b8" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="285" y="186" fill="#94a3b8" text-anchor="middle" font-size="11">stdin</text>
+
+  <!-- col 2 -->
+  <rect x="320" y="76" width="260" height="300" rx="10" fill="#1e1b4b" stroke="#6366f1"/>
+  <text x="450" y="100" fill="#e2e8f0" text-anchor="middle" font-weight="600" font-size="13">tokcodec</text>
+  <text x="450" y="117" fill="#a5b4fc" text-anchor="middle" font-size="11">detect kind → apply level → count tokens</text>
+  <g font-size="11">
+    <rect x="336" y="132" width="228" height="42" rx="6" fill="#0f172a" stroke="#334155"/>
+    <text x="346" y="149" fill="#4ade80" font-weight="600" font-size="12">L1 lossless</text>
+    <text x="346" y="165" fill="#94a3b8">ANSI, whitespace, JSON layout, exact dupes</text>
+    <rect x="336" y="182" width="228" height="42" rx="6" fill="#0f172a" stroke="#334155"/>
+    <text x="346" y="199" fill="#fbbf24" font-weight="600" font-size="12">L2 light</text>
+    <text x="346" y="215" fill="#94a3b8">timestamps, comments, near-dupes</text>
+    <rect x="336" y="232" width="228" height="42" rx="6" fill="#0f172a" stroke="#334155"/>
+    <text x="346" y="249" fill="#f87171" font-weight="600" font-size="12">L3 heavy</text>
+    <text x="346" y="265" fill="#94a3b8">function bodies → "...", logs → errors only</text>
+  </g>
+  <text x="450" y="300" fill="#94a3b8" text-anchor="middle" font-size="11">Every level marks what it removed:</text>
+  <text x="450" y="318" fill="#fbbf24" text-anchor="middle" font-size="11" font-family="ui-monospace, Menlo, monospace">[×80]   ...  # 42 lines   … [300 omitted]</text>
+  <text x="450" y="350" fill="#64748b" text-anchor="middle" font-size="11">Python via ast · JS via scanner · JSON parsed</text>
+
+  <line x1="580" y1="196" x2="642" y2="196" stroke="#4ade80" stroke-width="2" marker-end="url(#arrg)"/>
+  <text x="611" y="186" fill="#4ade80" text-anchor="middle" font-size="11">stdout</text>
+
+  <!-- col 3 -->
+  <rect x="646" y="76" width="230" height="300" rx="10" fill="#111827" stroke="#334155"/>
+  <text x="761" y="100" fill="#e2e8f0" text-anchor="middle" font-weight="600" font-size="13">Model's context window</text>
+  <text x="761" y="117" fill="#64748b" text-anchor="middle" font-size="11">what you pay for, every turn</text>
+
+  <text x="660" y="143" fill="#94a3b8" font-size="11">without tokcodec</text>
+  <rect x="660" y="149" width="202" height="18" rx="4" fill="#f87171"/>
+  <text x="761" y="162" fill="#0f172a" text-anchor="middle" font-size="11" font-weight="600">15,089 tokens</text>
+
+  <text x="660" y="192" fill="#94a3b8" font-size="11">with tokcodec, level 3</text>
+  <rect x="660" y="198" width="202" height="18" rx="4" fill="#14532d"/>
+  <rect x="660" y="198" width="8" height="18" rx="4" fill="#4ade80"/>
+  <text x="676" y="211" fill="#4ade80" font-size="11" font-weight="600">231 tokens (−98%)</text>
+
+  <g font-size="11" fill="#cbd5e1">
+    <text x="660" y="246">✓ failing test and traceback</text>
+    <text x="660" y="264">✓ summary line</text>
+    <text x="660" y="282">✓ every import, class, signature</text>
+    <text x="660" y="306" fill="#64748b">✗ 400 × PASSED</text>
+    <text x="660" y="324" fill="#64748b">✗ function bodies, until asked</text>
+    <text x="660" y="342" fill="#64748b">✗ comments, timestamps, ANSI</text>
+  </g>
+
+  <!-- triggers -->
+  <rect x="24" y="392" width="852" height="88" rx="10" fill="#111827" stroke="#334155"/>
+  <text x="40" y="414" fill="#e2e8f0" font-weight="600" font-size="13">How it gets invoked in Claude Code</text>
+  <text x="40" y="438" fill="#94a3b8"><tspan fill="#a5b4fc" font-weight="600">Hook, automatic:</tspan> Claude runs <tspan font-family="ui-monospace, Menlo, monospace" fill="#cbd5e1">pytest</tspan>, the hook rewrites it to <tspan font-family="ui-monospace, Menlo, monospace" fill="#cbd5e1">pytest | tokcodec -</tspan> before it executes.</text>
+  <text x="40" y="460" fill="#94a3b8"><tspan fill="#a5b4fc" font-weight="600">Skill, Claude chooses:</tspan> big file? run <tspan font-family="ui-monospace, Menlo, monospace" fill="#cbd5e1">tokcodec file.py -l 3</tspan> for an outline first, then Read only the ranges that matter.</text>
+</svg>
