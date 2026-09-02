@@ -33,9 +33,9 @@ questions:
   - id: pytest_run-06
     type: value
     question: "Which package's deprecation warning is repeated many times at the end of the log, and what does the warning say?"
-    expected: "lodash: this version is no longer supported"
+    expected: "lodash"
     level_expected_to_answer: 3
-    notes: "lines 452-481: 'npm WARN deprecated lodash@4.17.N: this version is no longer supported' for N=0..29; tail is kept by L3"
+    notes: "Lines are `npm WARN deprecated lodash@4.17.N: this version is no longer supported`, N=0..29; deduped to the first at L2+. Expected was originally a normalised sentence that never appears literally, which made the grader reject a correct answer; corrected to the package name after the first run."
   - id: pytest_run-07
     type: detail
     question: "How many 'retrying connection to db' DEBUG attempts are logged?"

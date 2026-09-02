@@ -89,13 +89,24 @@ Real files, reproducible by anyone with `uv run python bench/run.py` (proxy toke
 
 ## Fidelity: does the model still get it right?
 
-Token savings alone is a party trick. The question is whether a model reading the compressed version still answers correctly. [`bench/fidelity/`](bench/fidelity) holds 104 questions with checkable answers, 8 per sample, deliberately including questions that levels 2 and 3 are *expected* to fail (comment contents, logic inside a collapsed body). The harness asks a model each question at every level, grades the answers, and writes every wrong one, unedited, to [`bench/FIDELITY.md`](bench/FIDELITY.md).
+Token savings alone is a party trick. The question is whether a model reading the compressed version still answers correctly. [`bench/fidelity/`](bench/fidelity) holds 104 questions with checkable answers, 8 per sample, deliberately including questions that levels 2 and 3 are *expected* to fail (comment contents, logic inside a collapsed body, the 10th item of a capped array). Each question is declared up front with the highest level it should survive, then asked at every level and graded. Results, Claude Sonnet 5, full report with every wrong answer unedited in [`bench/FIDELITY.md`](bench/FIDELITY.md):
+
+| | L0 raw | L1 lossless | L2 light | L3 heavy |
+|---|---:|---:|---:|---:|
+| questions that should survive the level | 100% | 100% | 100% | 100% |
+| all questions | 100% | 100% | 88% | 68% |
+| failure-finding in logs (which test, which assertion, totals) | 100% | 100% | 100% | 100% |
+| structural (signatures, classes, imports) | 100% | 100% | 100% | 100% |
+| detail (comments, docstrings, body logic) | 100% | 100% | 54% | 4% |
+| input tokens, all samples | 94,328 | 90,153 | 49,280 | 16,175 |
+
+Read the bottom rows as the point, not a caveat: level 3 keeps everything it promises to keep and loses almost everything it promises to lose. One question's expected answer was corrected after the first run because the grader rejected a correct response that quoted the log line verbatim; the note is in the question file.
 
 Run it yourself with an API key:
 
 ```bash
 uv run --extra bench python bench/fidelity/run.py --estimate   # cost first, no calls
-uv run --extra bench python bench/fidelity/run.py              # ~$5 on Sonnet 5, cached after
+uv run --extra bench python bench/fidelity/run.py              # about $6 on Sonnet 5, cached after
 ```
 
 ## What it never removes
