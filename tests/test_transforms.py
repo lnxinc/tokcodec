@@ -1,8 +1,8 @@
 import ast
 import json
 
-from tokpack import encode
-from tokpack.transforms import code, jsonx, logs, text as T
+from tokcodec import encode
+from tokcodec.transforms import code, jsonx, logs, text as T
 
 
 def test_lossless_text_is_meaning_preserving():

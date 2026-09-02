@@ -17,8 +17,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from tokpack import encode  # noqa: E402
-from tokpack.count import count_tokens  # noqa: E402
+from tokcodec import encode  # noqa: E402
+from tokcodec.count import count_tokens  # noqa: E402
 
 SAMPLES = ROOT / "samples"
 DESC = {
@@ -41,6 +41,8 @@ def main() -> int:
 
     rows, tot = [], [0, 0, 0, 0]
     for f in sorted(SAMPLES.iterdir()):
+        if f.suffix == ".md":
+            continue
         raw = f.read_text()
         rs = [encode(raw, level=l, path=str(f), exact=a.exact) for l in (1, 2, 3)]
         base = rs[0].tokens_before
@@ -67,9 +69,9 @@ def main() -> int:
         ("original", src, "yes"),
         ("gzip + base64", base64.b64encode(gzip.compress(src.encode())).decode(), "no, the model cannot inflate gzip"),
         ("vowels removed", re.sub(r"(?<=\w)[aeiou]", "", src), "partly, and it guesses wrong"),
-        ("tokpack L1", encode(src, 1, count=False).encoded, "yes, lossless"),
-        ("tokpack L2", encode(src, 2, count=False).encoded, "yes, comments gone"),
-        ("tokpack L3", encode(src, 3, count=False).encoded, "yes, bodies gone (outline)"),
+        ("tokcodec L1", encode(src, 1, count=False).encoded, "yes, lossless"),
+        ("tokcodec L2", encode(src, 2, count=False).encoded, "yes, comments gone"),
+        ("tokcodec L3", encode(src, 3, count=False).encoded, "yes, bodies gone (outline)"),
     ]
     why = ["| variant | bytes | tokens | vs original | model can read it? |", "|---|---:|---:|---:|---|"]
     for name, v, note in why_rows:

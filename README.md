@@ -1,42 +1,46 @@
-<h1 align="center">tokpack</h1>
-<p align="center"><b>A codec for LLM context.</b><br>
-Cut the tokens Claude Code and other AI tools burn on logs, JSON and source files by 30–95%.<br>
-Lossless or lossy, you pick the level.</p>
+<p align="center">
+  <img src="assets/hero.svg" alt="tokcodec turns a 15,089-token pytest log into 231 tokens with the failure intact" width="820">
+</p>
+
+<h1 align="center">tokcodec</h1>
 
 <p align="center">
-  <a href="https://github.com/YOUR_GITHUB/tokpack/actions"><img alt="CI" src="https://github.com/YOUR_GITHUB/tokpack/actions/workflows/ci.yml/badge.svg"></a>
+  <b>A codec for LLM context.</b><br>
+  Video codecs throw away what the eye can't see. tokcodec throws away what the model doesn't need.<br>
+  Your AI coding tools read less, know the same, and cost 30–95% fewer tokens.
+</p>
+
+<p align="center">
+  <a href="https://github.com/YOUR_GITHUB/tokcodec/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/YOUR_GITHUB/tokcodec/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://pypi.org/project/tokcodec/"><img alt="PyPI" src="https://img.shields.io/pypi/v/tokcodec?color=blue"></a>
+  <a href="https://www.npmjs.com/package/tokcodec"><img alt="npm" src="https://img.shields.io/npm/v/tokcodec?color=cb3837"></a>
   <img alt="Python 3.12+" src="https://img.shields.io/badge/python-3.12%2B-blue">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green">
 </p>
 
-```console
-$ pytest 2>&1 | tokpack - -k log -l 3 -s
-============================= test session starts ==============================
-collected 412 items
+---
 
-INFO  tests/test_api_1.py::test_case_1 PASSED  (73ms)  [×79]
-DEBUG  retrying connection to db (attempt 1)  [×40]
-ERROR tests/test_billing.py::test_refund FAILED
-    def test_refund():
-        r = refund(order_id='8f3a9c2b4d1e…')
->       assert r.status == 'ok'
-E       AssertionError: assert 'declined' == 'ok'
-INFO  tests/test_api_8.py::test_case_80 PASSED  (80ms)  [×320]
-========================= 1 failed, 411 passed in 42.11s =========================
-[tokpack kind=log level=3 15089→231 tok (-98%)]
+## Try it in 10 seconds
+
+```bash
+npx tokcodec why path/to/any/file.py     # see the token math for yourself
+npx tokcodec install                      # wire it into Claude Code (skill + hooks)
 ```
 
-Same failure, same summary, 98% fewer tokens.
+That's it. From now on Claude Code's `pytest`, `npm install`, `cargo build` and friends come back squeezed, and it gets an outline before reading a 2,000-line file.
 
-## Why this exists
+Prefer Python tooling? `uvx tokcodec ...` or `pipx run tokcodec ...` do the same. Permanent install: `uv tool install tokcodec` / `pipx install tokcodec`.
 
-Every tool result an AI coding agent reads goes into its context window and onto your bill. Most of it is filler: 400 lines of `PASSED`, pretty-printed JSON that is half whitespace, 2,000-line source files when the agent only needed the shape of the module.
+## What you get
 
-Video and image codecs solved the same problem for a different consumer. They throw away what the eye can't see. tokpack throws away what the model doesn't need, in graded levels, and shows you the token count before and after.
+- **Smaller tool results, same signal.** Repeated log lines collapse to `[×80]`. The failure, its traceback and the summary line stay.
+- **Outlines instead of walls of code.** Level 3 keeps imports, classes, signatures and the first docstring line, and marks each dropped body with `...  # 42 lines`. Valid Python, valid JSON, readable JS.
+- **A number, not a vibe.** Every run can print `before → after` token counts. `tokcodec bench` runs the whole table on your own repo.
+- **Nothing hidden.** Every level tells the reader what it removed, so an agent knows when to look deeper.
 
 ## Benchmark
 
-Run `uv run python bench/run.py` to reproduce. Full details in [`bench/RESULTS.md`](bench/RESULTS.md).
+Real files, reproducible with `uv run python bench/run.py`. Details in [`bench/RESULTS.md`](bench/RESULTS.md).
 
 <!-- BENCH -->
 | file | kind | what it is | raw tokens | L1 lossless | L2 light | L3 heavy |
@@ -51,122 +55,104 @@ Run `uv run python bench/run.py` to reproduce. Full details in [`bench/RESULTS.m
 
 ## Why not just gzip it?
 
-Because bytes and tokens are different currencies. A BPE tokenizer turns high-entropy text into roughly one token per one or two characters, and the model cannot inflate gzip in its head anyway. Every "clever" byte-level trick makes the token count worse:
+Because bytes and tokens are different currencies. A BPE tokenizer turns high-entropy text into roughly one token per one or two characters, and the model can't inflate gzip in its head anyway. Every byte-level trick makes the token count *worse*:
 
 <!-- WHY -->
 | variant | bytes | tokens | vs original | model can read it? |
 |---|---:|---:|---:|---|
 | original | 12,873 | 3,159 | +0% | yes |
-| gzip + base64 | 4,876 | 3,296 | +4% | no, the model cannot inflate gzip |
+| gzip + base64 | 4,876 | 3,297 | +4% | no, the model cannot inflate gzip |
 | vowels removed | 11,075 | 3,908 | +24% | partly, and it guesses wrong |
-| tokpack L1 | 12,866 | 3,159 | +0% | yes, lossless |
-| tokpack L2 | 7,996 | 2,105 | -33% | yes, comments gone |
-| tokpack L3 | 1,957 | 599 | -81% | yes, bodies gone (outline) |
+| tokcodec L1 | 12,866 | 3,159 | +0% | yes, lossless |
+| tokcodec L2 | 7,996 | 2,105 | -33% | yes, comments gone |
+| tokcodec L3 | 1,957 | 599 | -81% | yes, bodies gone (outline) |
 <!-- /WHY -->
 
-Token compression has to remove *information the reader doesn't need*, not bytes.
+Token compression has to remove *information the reader doesn't need*, not bytes. That is what tokcodec does, in graded levels.
 
-## Install
+## Levels
 
-```bash
-uv tool install tokpack        # or: pipx install tokpack
-tokpack --version
-```
+| Level | Name | What happens | Edit against it? |
+|---|---|---|---|
+| 0 | raw | nothing | yes |
+| 1 | **lossless** | ANSI codes, `\r`, trailing whitespace, blank-line runs, JSON re-serialised compact, exact duplicate log lines → `[×N]` | yes |
+| 2 | **light** | + timestamps and long hex ids out of logs, near-duplicates collapsed, comments and docstrings out of code | no (whitespace differs) |
+| 3 | **heavy** | + function bodies → `...  # N lines` (Python) or `{ /* … N lines */ }` (JS/TS), indentation shrunk, logs cut to head + tail + every error/warning line with context, JSON arrays capped at 8 items and strings at 200 chars | no |
 
-From source:
-
-```bash
-git clone https://github.com/YOUR_GITHUB/tokpack && cd tokpack
-uv sync && uv run tokpack samples/pytest_run.log -l 3 -s
-```
+Levels 2 and 3 are for *reading*. When an agent needs to change a file it should read it losslessly, and the bundled skill says so.
 
 ## Usage
 
 ```bash
-tokpack FILE                    # level 2, kind auto-detected
-tokpack FILE -l 3 -s            # heavy level, print token stats to stderr
-cat big.json | tokpack - -k json -l 1
-tokpack bench path/ or files    # table of savings per level
-tokpack count FILE              # token count
-tokpack why FILE                # the gzip table above, for any file
+tokcodec FILE                    # level 2, kind auto-detected
+tokcodec FILE -l 3 -s            # heavy level, token stats on stderr
+cat big.json | tokcodec - -k json -l 1
+tokcodec bench src/              # savings table for a whole directory
+tokcodec count FILE              # token count
+tokcodec why FILE                # the gzip table above, for any file
+tokcodec install [--project] [--skill-only] [--uninstall] [--dry-run]
 ```
 
-Add `--exact` to any command to count with Anthropic's `count_tokens` endpoint instead of the local proxy tokenizer (needs `ANTHROPIC_API_KEY` or an `ant auth login` profile; it is free).
+Kinds are auto-detected from extension and content: `python`, `js` (also ts/tsx/jsx), `json`, `log`, `diff`, `text`. Override with `-k`.
 
-### Levels
+Add `--exact` to count with Anthropic's `count_tokens` endpoint instead of the local proxy tokenizer. It is free and needs `ANTHROPIC_API_KEY` or an `ant auth login` profile.
 
-| Level | Name | What happens | Safe to edit against? |
-|---|---|---|---|
-| 0 | raw | nothing | yes |
-| 1 | **lossless** | ANSI codes, `\r`, trailing whitespace, runs of blank lines, JSON re-serialised compact, exact duplicate log lines collapsed to `[×N]` | yes |
-| 2 | **light** | + timestamps and long hex ids stripped from logs, near-duplicate lines collapsed, comments and docstrings removed from code | no (whitespace differs) |
-| 3 | **heavy** | + function bodies replaced by `...  # N lines` (Python, valid syntax) or `{ /* … N lines */ }` (JS/TS), indentation shrunk, logs truncated to head + tail + every error/warning line with context, JSON arrays capped at 8 items and strings at 200 chars (still valid JSON) | no |
-
-Level 3 output always marks what was dropped, so the reader knows where to look deeper.
-
-### Content kinds
-
-Auto-detected from extension and content: `python`, `js` (also ts/tsx/jsx), `json`, `log`, `diff`, `text`. Override with `-k`.
-
-### Library
+### As a library
 
 ```python
-from tokpack import encode
+from tokcodec import encode
 
 r = encode(open("app.log").read(), level=3, kind="log")
 print(r.encoded)
-print(r.tokens_before, r.tokens_after, r.steps)   # 15089 231 ['lossless-text', 'log-fuzzy', 'log-truncate']
+print(r.tokens_before, r.tokens_after, r.steps)
+# 15089 231 ['lossless-text', 'log-fuzzy', 'log-truncate']
 ```
 
 ## Claude Code integration
 
-tokpack is a plain stdin/stdout CLI, so it works anywhere. For Claude Code there are three pieces, all in [`integrations/claude-code/`](integrations/claude-code):
+`tokcodec install` sets up three things under `~/.claude/` (or `./.claude/` with `--project`):
 
-1. **A skill** (`SKILL.md`) that teaches Claude when to reach for `tokpack` instead of reading a 2,000-line file whole, and which level to use.
-2. **A Bash hook** (`PreToolUse`) that automatically rewrites noisy commands (`pytest`, `npm install`, `cargo build`, `git pull`, ...) to pipe through `tokpack - -k log -l 3`. Claude never sees the 900 lines of dots.
-3. **A Read hook** (`PreToolUse`, opt-in) that stops whole-file reads above 64 KB and points Claude at `tokpack file -l 3` for an outline first, then ranged reads.
+1. **A skill** that teaches Claude when to reach for tokcodec instead of reading a huge file whole, and which level to use.
+2. **A Bash hook** (`PreToolUse`) that rewrites noisy commands (`pytest`, `npm install`, `cargo build`, `git pull`, …) to pipe through `tokcodec - -k log -l 3`. Claude never sees the 900 lines of dots.
+3. **A Read hook** (`PreToolUse`) that stops whole-file reads above 64 KB and points Claude at `tokcodec file -l 3` for an outline, then ranged reads.
 
-```bash
-uv tool install tokpack
-./integrations/claude-code/install.sh          # skill + hooks
-./integrations/claude-code/install.sh --skill  # skill only
-```
+Settings are merged, never overwritten, and `--uninstall` removes exactly what was added. Knobs: `TOKCODEC_HOOK_LEVEL=2|3`, `TOKCODEC_READ_MAX_KB=64`, `TOKCODEC_HOOK_DISABLE=1`.
 
-Then merge `integrations/claude-code/settings.example.json` into `~/.claude/settings.json`. Knobs: `TOKPACK_HOOK_LEVEL=2|3`, `TOKPACK_READ_MAX_KB=64`, `TOKPACK_HOOK_DISABLE=1`.
-
-Works with any other agent that can run shell commands or read a CLAUDE.md-style instruction file: Cursor, Codex, Aider, Gemini CLI. Point them at the skill text.
+Using Cursor, Codex, Aider or Gemini CLI? tokcodec is a plain stdin/stdout filter. Drop the text of [`SKILL.md`](tokcodec/assets/claude_code/SKILL.md) into your agent's instructions file and pipe away.
 
 ## How it works
 
 ```
-input ──▶ detect kind ──▶ level 1: lossless text + kind-specific lossless
-                      ──▶ level 2: kind-specific light lossy
-                      ──▶ level 3: kind-specific heavy lossy
-                      ──▶ count tokens before/after
+input ─▶ detect kind ─▶ L1 lossless ─▶ L2 light lossy ─▶ L3 heavy lossy ─▶ count tokens
 ```
 
-- **Python** uses `ast` and `tokenize`, so comment stripping never touches a `#` inside a string and skeletons stay valid Python.
+- **Python** goes through `ast` and `tokenize`, so a `#` inside a string is never mistaken for a comment and skeletons always parse.
 - **JS/TS** uses a small scanner that tracks strings, template literals and comments while matching braces.
-- **Logs** dedupe with a fuzzy key (digits and durations normalised), then keep head, tail and any line matching error/fail/warn/exception/traceback/summary patterns with one line of context.
-- **JSON** is parsed and re-emitted, so the output is always valid JSON.
+- **Logs** dedupe on a fuzzy key (digits and durations normalised), then keep head, tail and every line matching error/fail/warn/exception/traceback/summary patterns, with one line of context.
+- **JSON** is parsed and re-emitted, so output is always valid JSON.
 
-## What it does not do
+## Honest limits
 
-- It is not the Claude tokenizer. Anthropic does not publish one, so the default counter is tiktoken's `o200k_base`. The *ratios* transfer well; absolute numbers can differ by 10–30%. Use `--exact` for real counts.
-- It does not replace prompt caching. Caching makes re-sent context cheap. tokpack makes the context smaller in the first place. Use both.
-- Levels 2 and 3 are for reading, not editing. If an agent needs to change a file, it should read it losslessly.
+- The default counter is tiktoken's `o200k_base`, because Anthropic doesn't publish Claude's tokenizer. Ratios transfer well; absolute numbers can differ by 10–30%. `--exact` gives real counts.
+- tokcodec does not replace prompt caching. Caching makes re-sent context cheap; tokcodec makes it smaller to begin with. Use both.
+- Languages other than Python and JS/TS get the text and log treatment only, for now.
 
 ## Roadmap
 
 - [ ] More languages via tree-sitter (Go, Rust, Java, C#)
 - [ ] Diff-aware mode: skeleton everything except the hunks that changed
-- [ ] Learned importance scoring for log lines (small local model)
 - [ ] Session-level dedupe: never send the same file twice in one conversation
-- [ ] `tokpack serve`: an MCP server exposing `read_compact`
+- [ ] `tokcodec serve`: an MCP server exposing `read_compact`
+- [ ] Learned importance scoring for log lines
 
 ## Contributing
 
-`uv sync && uv run pytest`. Benchmarks: `uv run python bench/run.py`. Every transform needs a test that proves it keeps what it promises to keep (a failure line, a signature, valid JSON). See [CONTRIBUTING.md](CONTRIBUTING.md).
+```bash
+git clone https://github.com/YOUR_GITHUB/tokcodec && cd tokcodec
+uv sync && uv run pytest && uv run python bench/run.py
+```
+
+Every transform ships with a test that proves what it *keeps*: a failure line, a signature, valid JSON. See [CONTRIBUTING.md](CONTRIBUTING.md). Ideas and benchmark results from your own repos are very welcome in issues.
 
 ## License
 

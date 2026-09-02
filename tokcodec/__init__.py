@@ -1,4 +1,4 @@
-"""tokpack - a token encoder for LLM inputs.
+"""tokcodec - a token encoder for LLM inputs.
 
 Like a video codec, but the "viewer" is a language model: a lossless level that
 only removes bytes the model gains nothing from, and lossy levels that drop

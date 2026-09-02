@@ -1,0 +1,12 @@
+{
+  "name": "tokcodec",
+  "version": "0.1.0",
+  "description": "A codec for LLM context: cut the tokens AI coding tools burn on logs, JSON and source by 30-95%. npx launcher for the Python CLI.",
+  "bin": { "tokcodec": "bin/tokcodec.js" },
+  "files": ["bin"],
+  "keywords": ["llm", "tokens", "claude", "claude-code", "prompt-compression", "context-window", "cli"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/YOUR_GITHUB/tokcodec" },
+  "homepage": "https://github.com/YOUR_GITHUB/tokcodec#readme",
+  "engines": { "node": ">=18" }
+}

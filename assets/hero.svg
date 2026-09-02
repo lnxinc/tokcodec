@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="420" viewBox="0 0 820 420" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/><stop offset="1" stop-color="#1e1b4b"/>
+    </linearGradient>
+  </defs>
+  <rect width="820" height="420" rx="14" fill="url(#bg)"/>
+  <circle cx="24" cy="22" r="6" fill="#ff5f57"/><circle cx="44" cy="22" r="6" fill="#febc2e"/><circle cx="64" cy="22" r="6" fill="#28c840"/>
+  <text x="410" y="27" fill="#94a3b8" text-anchor="middle" font-size="12">tokcodec — same failure, same summary, 98% fewer tokens</text>
+
+  <g fill="#e2e8f0">
+    <text x="24" y="62"><tspan fill="#22d3ee">$</tspan> pytest 2>&amp;1 | <tspan fill="#a78bfa">tokcodec</tspan> - -k log -l 3 -s</text>
+    <text x="24" y="90" fill="#64748b">============================= test session starts ==============================</text>
+    <text x="24" y="110" fill="#94a3b8">collected 412 items</text>
+    <text x="24" y="138">INFO  tests/test_api_1.py::test_case_1 PASSED  (73ms)  <tspan fill="#fbbf24">[×79]</tspan></text>
+    <text x="24" y="158">DEBUG retrying connection to db (attempt 1)  <tspan fill="#fbbf24">[×40]</tspan></text>
+    <text x="24" y="186" fill="#f87171">ERROR tests/test_billing.py::test_refund FAILED</text>
+    <text x="24" y="206">    def test_refund():</text>
+    <text x="24" y="226">        r = refund(order_id='8f3a9c2b4d1e<tspan fill="#fbbf24">…</tspan>')</text>
+    <text x="24" y="246" fill="#f87171">>       assert r.status == 'ok'</text>
+    <text x="24" y="266" fill="#f87171">E       AssertionError: assert 'declined' == 'ok'</text>
+    <text x="24" y="294">INFO  tests/test_api_8.py::test_case_80 PASSED  (80ms)  <tspan fill="#fbbf24">[×320]</tspan></text>
+    <text x="24" y="322" fill="#64748b">========================= 1 failed, 411 passed in 42.11s =========================</text>
+  </g>
+
+  <rect x="24" y="346" width="772" height="50" rx="8" fill="#0b1220" stroke="#334155"/>
+  <text x="40" y="367" fill="#94a3b8">[tokcodec kind=log level=3]</text>
+  <text x="40" y="387"><tspan fill="#f87171" font-weight="bold">15,089 tokens</tspan><tspan fill="#94a3b8">  →  </tspan><tspan fill="#4ade80" font-weight="bold">231 tokens</tspan><tspan fill="#94a3b8">   (−98%)   nothing you needed is gone</tspan></text>
+</svg>

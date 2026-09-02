@@ -2,11 +2,11 @@
 """PreToolUse hook (matcher: Bash).
 
 Pipes noisy commands (tests, builds, installs, git fetches) through
-`tokpack - -k log -l 3` so Claude sees a compressed, failure-preserving
+`tokcodec - -k log -l 3` so Claude sees a compressed, failure-preserving
 transcript instead of thousands of repeated lines.
 
-Opt out for one command by including `tokpack` or `# raw` in it.
-Tune with env vars: TOKPACK_HOOK_LEVEL (default 3), TOKPACK_HOOK_DISABLE=1.
+Opt out for one command by including `tokcodec` or `# raw` in it.
+Tune with env vars: TOKCODEC_HOOK_LEVEL (default 3), TOKCODEC_HOOK_DISABLE=1.
 """
 import json
 import os
@@ -33,7 +33,7 @@ NOISY = re.compile(
 
 
 def main() -> int:
-    if os.environ.get("TOKPACK_HOOK_DISABLE"):
+    if os.environ.get("TOKCODEC_HOOK_DISABLE"):
         return 0
     try:
         data = json.load(sys.stdin)
@@ -45,12 +45,12 @@ def main() -> int:
     cmd = (ti.get("command") or "").strip()
     if not cmd or ti.get("run_in_background"):
         return 0
-    if "tokpack" in cmd or "# raw" in cmd or "|" in cmd or ">" in cmd:
+    if "tokcodec" in cmd or "# raw" in cmd or "|" in cmd or ">" in cmd:
         return 0
     if not NOISY.match(cmd):
         return 0
-    level = os.environ.get("TOKPACK_HOOK_LEVEL", "3")
-    wrapped = f"set -o pipefail; {{ {cmd}; }} 2>&1 | tokpack - -k log -l {level}"
+    level = os.environ.get("TOKCODEC_HOOK_LEVEL", "3")
+    wrapped = f"set -o pipefail; {{ {cmd}; }} 2>&1 | tokcodec - -k log -l {level}"
     print(json.dumps({
         "hookSpecificOutput": {
             "hookEventName": "PreToolUse",

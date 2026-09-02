@@ -1,9 +1,10 @@
-"""tokpack CLI.
+"""tokcodec CLI.
 
-  tokpack FILE [-l 0..3] [--kind K] [--stats] [--exact]   encode one file (or - for stdin)
-  tokpack bench PATH... [--exact]                          table of savings per level
-  tokpack count FILE                                        token count
-  tokpack why                                               show why gzip/abbreviation backfire
+  tokcodec FILE [-l 0..3] [--kind K] [--stats] [--exact]   encode one file (or - for stdin)
+  tokcodec bench PATH... [--exact]                          table of savings per level
+  tokcodec count FILE                                        token count
+  tokcodec why                                               show why gzip/abbreviation backfire
+  tokcodec install [--project] [--skill-only] [--uninstall]  set up the Claude Code skill + hooks
 """
 from __future__ import annotations
 
@@ -30,7 +31,7 @@ def cmd_encode(a):
     if not r.encoded.endswith("\n"):
         sys.stdout.write("\n")
     if a.stats:
-        print(f"[tokpack kind={r.kind} level={r.level} {r.tokens_before}→{r.tokens_after} tok "
+        print(f"[tokcodec kind={r.kind} level={r.level} {r.tokens_before}→{r.tokens_after} tok "
               f"(-{r.saved_pct:.0f}%) steps={','.join(r.steps) or 'none'}]", file=sys.stderr)
 
 
@@ -82,9 +83,9 @@ def cmd_why(a):
         "zlib+base85": base64.b85encode(zlib.compress(raw.encode(), 9)).decode(),
         "drop vowels": re.sub(r"(?<=\w)[aeiou]", "", raw),
         "no spaces": re.sub(r"[ \t]+", " ", raw),
-        "tokpack L1": encode(raw, 1, count=False).encoded,
-        "tokpack L2": encode(raw, 2, count=False).encoded,
-        "tokpack L3": encode(raw, 3, count=False).encoded,
+        "tokcodec L1": encode(raw, 1, count=False).encoded,
+        "tokcodec L2": encode(raw, 2, count=False).encoded,
+        "tokcodec L3": encode(raw, 3, count=False).encoded,
     }
     base = count_tokens(raw, a.exact)
     print(f"{'variant':<14}{'bytes':>8}{'tokens':>8}{'vs orig':>9}   readable by the model?")
@@ -93,9 +94,9 @@ def cmd_why(a):
         "zlib+base85": "no",
         "drop vowels": "partly - and it guesses wrong",
         "no spaces": "yes, but barely helps",
-        "tokpack L1": "yes - lossless",
-        "tokpack L2": "yes - loses comments/timestamps",
-        "tokpack L3": "yes - loses bodies/details (overview)",
+        "tokcodec L1": "yes - lossless",
+        "tokcodec L2": "yes - loses comments/timestamps",
+        "tokcodec L3": "yes - loses bodies/details (overview)",
         "original": "yes",
     }
     for name, v in variants.items():
@@ -107,7 +108,7 @@ def cmd_why(a):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="tokpack", description=__doc__,
+    ap = argparse.ArgumentParser(prog="tokcodec", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--version", action="version", version=__version__)
     sub = ap.add_subparsers(dest="cmd")
@@ -135,10 +136,18 @@ def main(argv=None):
     w = sub.add_parser("why", help="show why classic compression backfires on tokens")
     w.add_argument("file", nargs="?"); common(w); w.set_defaults(fn=cmd_why)
 
-    # allow `tokpack FILE` shorthand
+    i = sub.add_parser("install", help="install the Claude Code skill and hooks")
+    i.add_argument("--project", action="store_true", help="install into ./.claude instead of ~/.claude")
+    i.add_argument("--skill-only", action="store_true", help="skill only, no hooks")
+    i.add_argument("--uninstall", action="store_true")
+    i.add_argument("--dry-run", action="store_true")
+    i.set_defaults(fn=lambda a: __import__("tokcodec.install", fromlist=["run"]).run(
+        project=a.project, skill_only=a.skill_only, uninstall=a.uninstall, dry_run=a.dry_run))
+
+    # allow `tokcodec FILE` shorthand
     if argv is None:
         argv = sys.argv[1:]
-    if argv and argv[0] not in {"encode", "bench", "count", "why", "-h", "--help", "--version"}:
+    if argv and argv[0] not in {"encode", "bench", "count", "why", "install", "-h", "--help", "--version"}:
         argv = ["encode", *argv]
     a = ap.parse_args(argv)
     if not a.cmd:

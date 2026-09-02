@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from tokpack.detect import detect
+from tokcodec.detect import detect
 
 SAMPLES = Path(__file__).parent.parent / "samples"
 
@@ -36,7 +36,7 @@ def test_detect_explicit_kind_wins():
 
 def run(*args, stdin=None):
     return subprocess.run(
-        [sys.executable, "-m", "tokpack.cli", *args],
+        [sys.executable, "-m", "tokcodec.cli", *args],
         input=stdin, capture_output=True, text=True, check=True,
     )
 
@@ -45,7 +45,7 @@ def test_cli_shorthand_and_stats():
     r = run(str(SAMPLES / "pytest_run.log"), "-l", "2", "-s")
     assert "1 failed, 411 passed" in r.stdout
     assert "AssertionError" in r.stdout
-    assert "[tokpack kind=log level=2" in r.stderr
+    assert "[tokcodec kind=log level=2" in r.stderr
 
 
 def test_cli_stdin_json_minify():
@@ -70,14 +70,16 @@ def test_cli_bench_runs_on_samples():
 
 def test_cli_why_runs():
     r = run("why", str(SAMPLES / "decoder.py"))
-    assert "gzip+base64" in r.stdout and "tokpack L3" in r.stdout
+    assert "gzip+base64" in r.stdout and "tokcodec L3" in r.stdout
 
 
 def test_every_sample_gets_smaller_at_level3_and_stays_parseable():
-    from tokpack import encode
+    from tokcodec import encode
     import ast
 
     for f in SAMPLES.iterdir():
+        if f.suffix == ".md":
+            continue
         raw = f.read_text()
         r = encode(raw, level=3, path=str(f))
         assert r.tokens_after < r.tokens_before * 0.5, f.name
