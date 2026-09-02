@@ -1,0 +1,13 @@
+{
+  "name": "lnxinc",
+  "owner": { "name": "LNX Inc.", "url": "https://lnxinc.com" },
+  "description": "Plugins from LNX Inc.",
+  "plugins": [
+    {
+      "name": "tokcodec",
+      "description": "Cut the tokens Claude Code spends on logs, JSON and source files by 30-95%.",
+      "source": { "type": "directory", "path": "." },
+      "version": "0.1.0"
+    }
+  ]
+}

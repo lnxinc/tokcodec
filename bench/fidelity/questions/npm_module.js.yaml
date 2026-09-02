@@ -1,0 +1,50 @@
+sample: npm_module.js
+questions:
+  - id: npm_module-01
+    type: structural
+    question: "Which three classes does this module export?"
+    expected: "GlobUtil, GlobWalker, GlobStream"
+    level_expected_to_answer: 3
+    notes: "grep -n '^export class' npm_module.js"
+  - id: npm_module-02
+    type: structural
+    question: "What class does `GlobStream` extend?"
+    expected: "GlobUtil"
+    level_expected_to_answer: 3
+    notes: "line 345"
+  - id: npm_module-03
+    type: structural
+    question: "What are the three imports at the top of the file (name and module specifier)?"
+    expected: "Minipass from 'minipass'; Ignore from './ignore.js'; Processor from './processor.js'"
+    level_expected_to_answer: 3
+    notes: "lines 7-9"
+  - id: npm_module-04
+    type: structural
+    question: "What is the signature of the `matchCheck` method on `GlobUtil` (including the async keyword)?"
+    expected: "async matchCheck(e, ifDir)"
+    level_expected_to_answer: 3
+    notes: "line 90"
+  - id: npm_module-05
+    type: detail
+    question: "What does the line comment directly above the `pause()` method call the pause/resume pair?"
+    expected: "backpressure mechanism"
+    level_expected_to_answer: 1
+    notes: "line 61 comment; L2 strips comments"
+  - id: npm_module-06
+    type: detail
+    question: "In the `GlobUtil` constructor, what value is the private `#sep` field given when `opts.platform === 'win32'` and `opts.posix` is falsy?"
+    expected: "'\\\\'"
+    level_expected_to_answer: 2
+    notes: "line 33: a single backslash string literal; body-only logic"
+  - id: npm_module-07
+    type: value
+    question: "What is the exact error message thrown by the constructor when child matches cannot be ignored because the ignore object lacks `add()`?"
+    expected: "cannot ignore child matches, ignore lacks add() method."
+    level_expected_to_answer: 2
+    notes: "line 39, inside constructor body"
+  - id: npm_module-08
+    type: value
+    question: "What initializer does the `seen` class field on `GlobUtil` have?"
+    expected: "new Set()"
+    level_expected_to_answer: 3
+    notes: "line 20 class field declaration (not a method body)"

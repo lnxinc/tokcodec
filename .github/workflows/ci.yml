@@ -7,15 +7,29 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         python: ["3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python }}
-      - run: uv sync --dev
+      - run: uv sync --dev --all-extras
       - run: uv run pytest -q
+      - run: uv run scripts/smoke.sh
+        shell: bash
+  versions-and-bench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      - run: uv sync --dev --all-extras
+      - run: uv run python scripts/check_versions.py
       - run: uv run python bench/run.py > /dev/null
       - run: git diff --exit-code README.md bench/RESULTS.md || (echo "benchmark table out of date; run bench/run.py" && exit 1)
+      - name: npm launcher parses and runs
+        run: node --check npm/bin/tokcodec.js && PATH="$PWD/.venv/bin:$PATH" node npm/bin/tokcodec.js --version

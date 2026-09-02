@@ -1,0 +1,50 @@
+sample: Arr.php
+questions:
+  - id: arr-01
+    type: structural
+    question: "What namespace is the `Arr` class declared in?"
+    expected: "Illuminate\\Support"
+    level_expected_to_answer: 3
+    notes: "line 3"
+  - id: arr-02
+    type: structural
+    question: "Which trait does `Arr` use?"
+    expected: "Macroable"
+    level_expected_to_answer: 3
+    notes: "line 13 (imported from Illuminate\\Support\\Traits\\Macroable)"
+  - id: arr-03
+    type: structural
+    question: "What is the full signature of the `first` method?"
+    expected: "public static function first($array, ?callable $callback = null, $default = null)"
+    level_expected_to_answer: 3
+    notes: "line 193"
+  - id: arr-04
+    type: structural
+    question: "Which three methods take their `$array` parameter by reference (`&$array`)?"
+    expected: "forget, pull, set"
+    level_expected_to_answer: 3
+    notes: "grep -n '&\\$array' Arr.php (lines 290, 692, 769)"
+  - id: arr-05
+    type: detail
+    question: "What `@return` type does the docblock of `first` declare?"
+    expected: "TValue|TFirstDefault"
+    level_expected_to_answer: 1
+    notes: "line 191 docblock; L2 strips docblocks"
+  - id: arr-06
+    type: detail
+    question: "Which PHP encoding constant does `query` pass as the last argument to `http_build_query`?"
+    expected: "PHP_QUERY_RFC3986"
+    level_expected_to_answer: 2
+    notes: "line 709, inside method body"
+  - id: arr-07
+    type: value
+    question: "What is the exact `InvalidArgumentException` message thrown by `random` when more items are requested than available?"
+    expected: "You requested {$requested} items, but there are only {$count} items available."
+    level_expected_to_answer: 2
+    notes: "line 730, inside method body"
+  - id: arr-08
+    type: value
+    question: "What is the default value of the `$depth` parameter of `flatten`?"
+    expected: "INF"
+    level_expected_to_answer: 3
+    notes: "line 260 signature default"

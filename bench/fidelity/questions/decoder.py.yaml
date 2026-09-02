@@ -1,0 +1,50 @@
+sample: decoder.py
+questions:
+  - id: decoder-01
+    type: structural
+    question: "What class does `JSONDecodeError` inherit from?"
+    expected: "ValueError"
+    level_expected_to_answer: 3
+    notes: "line 20: class JSONDecodeError(ValueError)"
+  - id: decoder-02
+    type: structural
+    question: "What is the full signature of `JSONDecoder.__init__`?"
+    expected: "def __init__(self, *, object_hook=None, parse_float=None, parse_int=None, parse_constant=None, strict=True, object_pairs_hook=None)"
+    level_expected_to_answer: 3
+    notes: "lines 292-294 (multi-line signature)"
+  - id: decoder-03
+    type: structural
+    question: "What names are listed in `__all__`?"
+    expected: "JSONDecoder, JSONDecodeError"
+    level_expected_to_answer: 3
+    notes: "line 11 module-level assignment"
+  - id: decoder-04
+    type: structural
+    question: "What is the full signature of the module-level function `JSONArray`?"
+    expected: "def JSONArray(s_and_end, scan_once, _w=WHITESPACE.match, _ws=WHITESPACE_STR)"
+    level_expected_to_answer: 3
+    notes: "line 221"
+  - id: decoder-05
+    type: detail
+    question: "According to the translation table in the `JSONDecoder` class docstring, what Python value does JSON `null` decode to?"
+    expected: "None"
+    level_expected_to_answer: 1
+    notes: "docstring table line 284, beyond the first docstring line; L2 strips docstrings"
+  - id: decoder-06
+    type: detail
+    question: "In `JSONDecoder.decode`, what error message is raised when characters remain after the decoded document?"
+    expected: "Extra data"
+    level_expected_to_answer: 2
+    notes: "line 348, inside method body"
+  - id: decoder-07
+    type: value
+    question: "What is the value of the module-level constant `FLAGS`?"
+    expected: "re.VERBOSE | re.MULTILINE | re.DOTALL"
+    level_expected_to_answer: 3
+    notes: "line 13"
+  - id: decoder-08
+    type: value
+    question: "What regular expression pattern is compiled into `STRINGCHUNK`?"
+    expected: '(.*?)(["\\\x00-\x1f])'
+    level_expected_to_answer: 3
+    notes: "line 54 module-level; grep -n STRINGCHUNK decoder.py"

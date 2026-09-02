@@ -51,7 +51,7 @@ def main() -> int:
     for f in sorted(SAMPLES.iterdir()):
         if f.suffix == ".md":
             continue
-        raw = f.read_text()
+        raw = f.read_text(encoding="utf-8")
         rs = [encode(raw, level=l, path=str(f), exact=a.exact) for l in (1, 2, 3)]
         base = rs[0].tokens_before
         tot[0] += base
@@ -71,7 +71,7 @@ def main() -> int:
     table = "\n".join(md)
 
     # why table
-    src = (SAMPLES / "decoder.py").read_text()
+    src = (SAMPLES / "decoder.py").read_text(encoding="utf-8")
     base = count_tokens(src, a.exact)
     why_rows = [
         ("original", src, "yes"),
@@ -91,14 +91,14 @@ def main() -> int:
     results = (f"# Benchmark results\n\nGenerated {stamp} by `bench/run.py`. Counter: {counter}.\n\n"
                f"## Savings per level\n\n{table}\n\n## Bytes are not tokens\n\n"
                f"Measured on `samples/decoder.py`.\n\n{why_table}\n")
-    (ROOT / "bench" / "RESULTS.md").write_text(results)
+    (ROOT / "bench" / "RESULTS.md").write_text(results, encoding="utf-8")
 
     readme = ROOT / "README.md"
     if readme.exists():
-        s = readme.read_text()
+        s = readme.read_text(encoding="utf-8")
         s = re.sub(r"(<!-- BENCH -->\n).*?(\n<!-- /BENCH -->)", lambda m: m.group(1) + table + m.group(2), s, flags=re.S)
         s = re.sub(r"(<!-- WHY -->\n).*?(\n<!-- /WHY -->)", lambda m: m.group(1) + why_table + m.group(2), s, flags=re.S)
-        readme.write_text(s)
+        readme.write_text(s, encoding="utf-8")
     print(results)
     return 0
 

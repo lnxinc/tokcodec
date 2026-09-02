@@ -1,0 +1,13 @@
+{
+  "name": "tokcodec",
+  "displayName": "tokcodec",
+  "version": "0.1.0",
+  "description": "Cut the tokens Claude Code spends on logs, JSON and source files by 30-95%. Skill + fail-open hooks that compress test/build/install output and steer big-file reads to outlines.",
+  "author": { "name": "LNX Inc.", "url": "https://lnxinc.com" },
+  "homepage": "https://github.com/lnxinc/tokcodec",
+  "repository": "https://github.com/lnxinc/tokcodec",
+  "license": "MIT",
+  "keywords": ["tokens", "context", "compression", "logs", "hooks"],
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./.mcp.json"
+}

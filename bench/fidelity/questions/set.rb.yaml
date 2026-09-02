@@ -1,0 +1,50 @@
+sample: set.rb
+questions:
+  - id: set-01
+    type: structural
+    question: "Which module does `class Set` include?"
+    expected: "Enumerable"
+    level_expected_to_answer: 3
+    notes: "line 71"
+  - id: set-02
+    type: structural
+    question: "What is the superclass of `SortedSet`?"
+    expected: "Set"
+    level_expected_to_answer: 3
+    notes: "line 693: class SortedSet < Set"
+  - id: set-03
+    type: structural
+    question: "What is the full signature of `Set#initialize`?"
+    expected: "def initialize(enum = nil, &block)"
+    level_expected_to_answer: 3
+    notes: "line 93"
+  - id: set-04
+    type: structural
+    question: "What is the full signature of the `to_set` method added to `Enumerable`?"
+    expected: "def to_set(klass = Set, *args, &block)"
+    level_expected_to_answer: 3
+    notes: "line 814"
+  - id: set-05
+    type: detail
+    question: "According to the header comment, who besides Akinori MUSHA is credited with the documentation?"
+    expected: "Gavin Sinclair"
+    level_expected_to_answer: 1
+    notes: "line 8 comment; L2 strips comments"
+  - id: set-06
+    type: detail
+    question: "In `initialize`, what default value is the internal `@hash` created with?"
+    expected: "Hash.new(false)"
+    level_expected_to_answer: 2
+    notes: "line 94, inside method body"
+  - id: set-07
+    type: value
+    question: "What `ArgumentError` message does `superset?` raise when its argument is not a Set?"
+    expected: "value must be a set"
+    level_expected_to_answer: 2
+    notes: "line 266, inside method body"
+  - id: set-08
+    type: value
+    question: "What symbol is the class-level constant `InspectKey` set to?"
+    expected: ":__inspect_key__"
+    level_expected_to_answer: 3
+    notes: "line 629 class-level constant"

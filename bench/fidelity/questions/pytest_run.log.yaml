@@ -1,0 +1,50 @@
+sample: pytest_run.log
+questions:
+  - id: pytest_run-01
+    type: failure
+    question: "Which single test failed (full node id)?"
+    expected: "tests/test_billing.py::test_refund"
+    level_expected_to_answer: 3
+    notes: "grep -n FAILED pytest_run.log (line 125); error lines are kept by L3"
+  - id: pytest_run-02
+    type: failure
+    question: "What was the assertion error message of the failing test?"
+    expected: "AssertionError: assert 'declined' == 'ok'"
+    level_expected_to_answer: 3
+    notes: "line 129 (E line in the failure block)"
+  - id: pytest_run-03
+    type: failure
+    question: "At which file:line did the failing assertion occur?"
+    expected: "tests/test_billing.py:41"
+    level_expected_to_answer: 3
+    notes: "line 131"
+  - id: pytest_run-04
+    type: failure
+    question: "What is the final summary (totals) line of the run, without the surrounding '=' padding?"
+    expected: "1 failed, 411 passed in 42.11s"
+    level_expected_to_answer: 3
+    notes: "last line 482; tail is kept by L3"
+  - id: pytest_run-05
+    type: value
+    question: "How many test items were collected?"
+    expected: "412"
+    level_expected_to_answer: 3
+    notes: "line 4: 'collected 412 items' (head is kept by L3)"
+  - id: pytest_run-06
+    type: value
+    question: "Which package's deprecation warning is repeated many times at the end of the log, and what does the warning say?"
+    expected: "lodash: this version is no longer supported"
+    level_expected_to_answer: 3
+    notes: "lines 452-481: 'npm WARN deprecated lodash@4.17.N: this version is no longer supported' for N=0..29; tail is kept by L3"
+  - id: pytest_run-07
+    type: detail
+    question: "How many 'retrying connection to db' DEBUG attempts are logged?"
+    expected: "40"
+    level_expected_to_answer: 2
+    notes: "grep -c 'retrying connection to db' pytest_run.log = 40 (lines 85-124, attempt 1..40); these near-duplicate lines sit in the middle of the file so L3 head+tail truncation drops them"
+  - id: pytest_run-08
+    type: detail
+    question: "What is the full timestamp on the line that reports the FAILED test?"
+    expected: "2026-09-02T10:17:01.123"
+    level_expected_to_answer: 1
+    notes: "line 125; L2 strips timestamps"

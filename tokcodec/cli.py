@@ -5,6 +5,8 @@
   tokcodec count FILE                                        token count
   tokcodec why                                               show why gzip/abbreviation backfire
   tokcodec langs                                             supported languages
+  tokcodec serve                                             MCP server over stdio
+  tokcodec hook bash|read                                    used by the Claude Code hooks
   tokcodec install [--project] [--skill-only] [--uninstall]  set up the Claude Code skill + hooks
 """
 from __future__ import annotations
@@ -22,7 +24,7 @@ from .pipeline import encode
 def _read(p: str) -> str:
     if p == "-":
         return sys.stdin.read()
-    return Path(p).read_text(errors="replace")
+    return Path(p).read_text(encoding="utf-8", errors="replace")
 
 
 def cmd_encode(a):
@@ -51,7 +53,7 @@ def cmd_bench(a):
     tot = [0, 0, 0, 0]
     for f in _iter_files(a.paths):
         try:
-            raw = f.read_text()
+            raw = f.read_text(encoding="utf-8")
         except (UnicodeDecodeError, OSError):
             continue
         rs = [encode(raw, level=l, path=str(f), exact=a.exact) for l in (1, 2, 3)]
@@ -86,7 +88,7 @@ def cmd_count(a):
 
 def cmd_why(a):
     import base64, gzip, zlib, re
-    raw = _read(a.file) if a.file else (Path(__file__).parent / "pipeline.py").read_text()
+    raw = _read(a.file) if a.file else (Path(__file__).parent / "pipeline.py").read_text(encoding="utf-8")
     variants = {
         "original": raw,
         "gzip+base64": base64.b64encode(gzip.compress(raw.encode())).decode(),
@@ -118,6 +120,11 @@ def cmd_why(a):
 
 
 def main(argv=None):
+    for stream in (sys.stdout, sys.stderr):  # markers like × … → must survive a cp1252 console
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):
+            pass
     ap = argparse.ArgumentParser(prog="tokcodec", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--version", action="version", version=__version__)
@@ -150,6 +157,13 @@ def main(argv=None):
     w = sub.add_parser("why", help="show why classic compression backfires on tokens")
     w.add_argument("file", nargs="?"); common(w); w.set_defaults(fn=cmd_why)
 
+    h = sub.add_parser("hook", help="Claude Code PreToolUse hook (reads JSON on stdin)")
+    h.add_argument("which", choices=["bash", "read"])
+    h.set_defaults(fn=lambda a: __import__("tokcodec.hooks", fromlist=["run"]).run(a.which))
+
+    sv = sub.add_parser("serve", help="run the MCP server over stdio (needs tokcodec[mcp])")
+    sv.set_defaults(fn=lambda a: __import__("tokcodec.serve", fromlist=["main"]).main())
+
     i = sub.add_parser("install", help="install the Claude Code skill and hooks")
     i.add_argument("--project", action="store_true", help="install into ./.claude instead of ~/.claude")
     i.add_argument("--skill-only", action="store_true", help="skill only, no hooks")
@@ -161,7 +175,7 @@ def main(argv=None):
     # allow `tokcodec FILE` shorthand
     if argv is None:
         argv = sys.argv[1:]
-    if argv and argv[0] not in {"encode", "bench", "count", "why", "install", "langs", "-h", "--help", "--version"}:
+    if argv and argv[0] not in {"encode", "bench", "count", "why", "install", "langs", "hook", "serve", "-h", "--help", "--version"}:
         argv = ["encode", *argv]
     a = ap.parse_args(argv)
     if not a.cmd:

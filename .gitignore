@@ -7,3 +7,7 @@ build/
 .pytest_cache/
 .ruff_cache/
 .DS_Store
+plan.md
+PLAN-LOG.md
+AUDIT.md
+outreach/

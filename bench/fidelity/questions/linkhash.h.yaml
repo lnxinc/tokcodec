@@ -1,0 +1,50 @@
+sample: linkhash.h
+questions:
+  - id: linkhash-01
+    type: structural
+    question: "What are the five members of `struct lh_entry`, in order?"
+    expected: "k, k_is_constant, v, next, prev"
+    level_expected_to_answer: 3
+    notes: "lines 85-113"
+  - id: linkhash-02
+    type: structural
+    question: "What is the full prototype of `lh_table_new`?"
+    expected: "extern struct lh_table *lh_table_new(int size, lh_entry_free_fn *free_fn, lh_hash_fn *hash_fn, lh_equal_fn *equal_fn);"
+    level_expected_to_answer: 3
+    notes: "lines 198-199"
+  - id: linkhash-03
+    type: structural
+    question: "What is the exact typedef for the `lh_hash_fn` callback type?"
+    expected: "typedef unsigned long(lh_hash_fn)(const void *k);"
+    level_expected_to_answer: 3
+    notes: "line 76"
+  - id: linkhash-04
+    type: structural
+    question: "What is the return type of `lh_table_lookup_ex`?"
+    expected: "json_bool"
+    level_expected_to_answer: 3
+    notes: "line 292"
+  - id: linkhash-05
+    type: detail
+    question: "How does the doc comment above `LH_PRIME` describe it?"
+    expected: "golden prime used in hash functions"
+    level_expected_to_answer: 1
+    notes: "line 29 comment; L2 strips comments"
+  - id: linkhash-06
+    type: detail
+    question: "What expression does the inline function `lh_get_hash` return?"
+    expected: "t->hash_fn(k)"
+    level_expected_to_answer: 2
+    notes: "line 378, inside function body"
+  - id: linkhash-07
+    type: value
+    question: "What is the value of the `LH_LOAD_FACTOR` macro?"
+    expected: "0.66"
+    level_expected_to_answer: 3
+    notes: "line 38 #define (top-level, not a function body)"
+  - id: linkhash-08
+    type: value
+    question: "What is the value of the `LH_PRIME` macro?"
+    expected: "0x9e370001UL"
+    level_expected_to_answer: 3
+    notes: "line 31 #define"

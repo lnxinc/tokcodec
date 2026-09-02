@@ -23,7 +23,9 @@ Add the extension in `tokcodec/detect.py`, implement `strip_comments`/`skeleton`
 
 - `tokcodec/` the Python package (engine, CLI, `install` command, Claude Code assets under `tokcodec/assets/`)
 - `npm/` the `npx tokcodec` launcher; it only locates or bootstraps the Python CLI, no logic lives there
-- `bench/` reproducible benchmark; `samples/` inputs with attribution
+- `bench/` reproducible benchmark (`run.py`) and the fidelity harness (`fidelity/`); `samples/` inputs with attribution
+- `.claude-plugin/`, `skills/`, `hooks/`, `.mcp.json` the Claude Code plugin (the skill file is a copy of `tokcodec/assets/claude_code/SKILL.md`; a test keeps them identical)
+- `scripts/` version check, smoke test, Docker cold test
 
 ## Style
 

@@ -37,7 +37,7 @@ def test_detect_explicit_kind_wins():
 def run(*args, stdin=None):
     return subprocess.run(
         [sys.executable, "-m", "tokcodec.cli", *args],
-        input=stdin, capture_output=True, text=True, check=True,
+        input=stdin, capture_output=True, text=True, check=True, encoding="utf-8",
     )
 
 
@@ -80,7 +80,7 @@ def test_every_sample_gets_smaller_at_level3_and_stays_parseable():
     for f in SAMPLES.iterdir():
         if f.suffix == ".md":
             continue
-        raw = f.read_text()
+        raw = f.read_text(encoding="utf-8")
         r = encode(raw, level=3, path=str(f))
         # dense files (short bodies, long signatures) shrink less; 0.65 still means a real outline
         assert r.tokens_after < r.tokens_before * 0.65, f.name

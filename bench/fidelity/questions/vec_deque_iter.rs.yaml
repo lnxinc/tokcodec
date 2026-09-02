@@ -1,0 +1,50 @@
+sample: vec_deque_iter.rs
+questions:
+  - id: vec_deque_iter-01
+    type: structural
+    question: "What are the two fields of the `Iter` struct (names and types)?"
+    expected: "i1: slice::Iter<'a, T>; i2: slice::Iter<'a, T>"
+    level_expected_to_answer: 3
+    notes: "struct definition lines 13-16"
+  - id: vec_deque_iter-02
+    type: structural
+    question: "Which three `unsafe impl` marker traits are implemented for `Iter`?"
+    expected: "TrustedLen, TrustedRandomAccess, TrustedRandomAccessNoCoerce"
+    level_expected_to_answer: 3
+    notes: "grep -n 'unsafe impl' vec_deque_iter.rs"
+  - id: vec_deque_iter-03
+    type: structural
+    question: "What is the full signature of `advance_by` in the `Iterator` impl?"
+    expected: "fn advance_by(&mut self, n: usize) -> Result<(), NonZero<usize>>"
+    level_expected_to_answer: 3
+    notes: "line 59"
+  - id: vec_deque_iter-04
+    type: structural
+    question: "What is the associated `Item` type declared in the `Iterator` impl for `Iter<'a, T>`?"
+    expected: "&'a T"
+    level_expected_to_answer: 3
+    notes: "line 41: type Item = &'a T; (impl-level item, not inside a fn body)"
+  - id: vec_deque_iter-05
+    type: detail
+    question: "Which issue number does the FIXME comment above the `Clone` impl reference?"
+    expected: "#26925"
+    level_expected_to_answer: 1
+    notes: "line 31 comment; L2 strips comments"
+  - id: vec_deque_iter-06
+    type: detail
+    question: "In `next()`, what does the `None` branch do before retrying `self.i1.next()`?"
+    expected: "mem::swap(&mut self.i1, &mut self.i2)"
+    level_expected_to_answer: 2
+    notes: "body-only logic, line 53"
+  - id: vec_deque_iter-07
+    type: value
+    question: "What value is the associated const `MAY_HAVE_SIDE_EFFECT` set to in the `TrustedRandomAccessNoCoerce` impl?"
+    expected: "false"
+    level_expected_to_answer: 3
+    notes: "line 183; impl-level const, not a fn body"
+  - id: vec_deque_iter-08
+    type: value
+    question: "What `since` version is given in the `#[stable]` attribute on the `FusedIterator` impl?"
+    expected: "1.26.0"
+    level_expected_to_answer: 3
+    notes: "line 170 attribute on the impl block (not inside a fn body); grep -n 'fused' vec_deque_iter.rs"

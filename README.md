@@ -7,7 +7,7 @@
 <p align="center">
   <b>A codec for LLM context.</b><br>
   Video codecs throw away what the eye can't see. tokcodec throws away what the model doesn't need.<br>
-  Your AI coding tools read less, know the same, and cost 30–95% fewer tokens.
+  A 15,089-token test run becomes 231 tokens. The failure is still there.
 </p>
 
 <p align="center">
@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/YOUR_GITHUB/tokcodec/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/YOUR_GITHUB/tokcodec/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/lnxinc/tokcodec/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/lnxinc/tokcodec/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://pypi.org/project/tokcodec/"><img alt="PyPI" src="https://img.shields.io/pypi/v/tokcodec?color=blue"></a>
   <a href="https://www.npmjs.com/package/tokcodec"><img alt="npm" src="https://img.shields.io/npm/v/tokcodec?color=cb3837"></a>
   <img alt="Python 3.12+" src="https://img.shields.io/badge/python-3.12%2B-blue">
@@ -25,6 +25,12 @@
 
 ---
 
+## The problem is headroom, not just money
+
+Every test run, install log, and 2,000-line file your AI coding agent reads lands in its context window. Most of it is filler: 400 lines of `PASSED`, JSON that is half whitespace, function bodies it never needed. The window fills, `/compact` fires, and the thread loses the plot mid-task. If you pay per token it also costs money, but on a flat plan the real price is the context you no longer have.
+
+tokcodec makes those tool results small before they land, in graded levels, and always tells the model what it left out.
+
 ## Try it in 10 seconds
 
 ```bash
@@ -32,16 +38,31 @@ npx tokcodec why path/to/any/file.py     # see the token math for yourself
 npx tokcodec install                      # wire it into Claude Code (skill + hooks)
 ```
 
-That's it. From now on Claude Code's `pytest`, `npm install`, `cargo build` and friends come back squeezed, and it gets an outline before reading a 2,000-line file.
+No Python on the machine? Fine. The launcher uses `uvx` or `pipx` if you have them, and otherwise downloads a private copy of [uv](https://docs.astral.sh/uv/) once (about 15 MB), which brings its own Python. Prefer Python tooling directly? `uvx tokcodec ...` or `pipx run tokcodec ...` do the same. Permanent install: `uv tool install tokcodec` / `pipx install tokcodec`.
 
-Prefer Python tooling? `uvx tokcodec ...` or `pipx run tokcodec ...` do the same. Permanent install: `uv tool install tokcodec` / `pipx install tokcodec`.
+Claude Code users can also install it as a plugin, which needs no settings merge:
 
-## What you get
+```
+/plugin marketplace add lnxinc/tokcodec
+/plugin install tokcodec@lnxinc
+```
 
-- **Smaller tool results, same signal.** Repeated log lines collapse to `[×80]`. The failure, its traceback and the summary line stay.
-- **Outlines instead of walls of code.** Level 3 keeps imports, classes, signatures and the first docstring line, and marks each dropped body with `...  # 42 lines`. Valid Python, valid JSON, readable JS.
-- **A number, not a vibe.** Every run can print `before → after` token counts. `tokcodec bench` runs the whole table on your own repo.
-- **Nothing hidden.** Every level tells the reader what it removed, so an agent knows when to look deeper.
+## Why not just gzip it?
+
+Because bytes and tokens are different currencies. A BPE tokenizer turns high-entropy text into roughly one token per one or two characters, and the model can't inflate gzip in its head anyway. Every byte-level trick makes the token count *worse*:
+
+<!-- WHY -->
+| variant | bytes | tokens | vs original | model can read it? |
+|---|---:|---:|---:|---|
+| original | 12,873 | 3,159 | +0% | yes |
+| gzip + base64 | 4,876 | 3,297 | +4% | no, the model cannot inflate gzip |
+| vowels removed | 11,075 | 3,908 | +24% | partly, and it guesses wrong |
+| tokcodec L1 | 12,866 | 3,159 | +0% | yes, lossless |
+| tokcodec L2 | 7,996 | 2,105 | -33% | yes, comments gone |
+| tokcodec L3 | 1,957 | 599 | -81% | yes, bodies gone (outline) |
+<!-- /WHY -->
+
+Token compression has to remove *information the reader doesn't need*, not bytes. That is what tokcodec does, in graded levels.
 
 ## Benchmark
 
@@ -66,22 +87,28 @@ Real files, reproducible with `uv run python bench/run.py`. Details in [`bench/R
 | **total** | | | **94,328** | **90,153 (−4%)** | **49,280 (−48%)** | **16,175 (−83%)** |
 <!-- /BENCH -->
 
-## Why not just gzip it?
+## Fidelity: does the model still get it right?
 
-Because bytes and tokens are different currencies. A BPE tokenizer turns high-entropy text into roughly one token per one or two characters, and the model can't inflate gzip in its head anyway. Every byte-level trick makes the token count *worse*:
+Token savings alone is a party trick. The question is whether a model reading the compressed version still answers correctly. [`bench/fidelity/`](bench/fidelity) holds 104 questions with checkable answers, 8 per sample, deliberately including questions that levels 2 and 3 are *expected* to fail (comment contents, logic inside a collapsed body). The harness asks a model each question at every level, grades the answers, and writes every wrong one, unedited, to [`bench/FIDELITY.md`](bench/FIDELITY.md).
 
-<!-- WHY -->
-| variant | bytes | tokens | vs original | model can read it? |
-|---|---:|---:|---:|---|
-| original | 12,873 | 3,159 | +0% | yes |
-| gzip + base64 | 4,876 | 3,297 | +4% | no, the model cannot inflate gzip |
-| vowels removed | 11,075 | 3,908 | +24% | partly, and it guesses wrong |
-| tokcodec L1 | 12,866 | 3,159 | +0% | yes, lossless |
-| tokcodec L2 | 7,996 | 2,105 | -33% | yes, comments gone |
-| tokcodec L3 | 1,957 | 599 | -81% | yes, bodies gone (outline) |
-<!-- /WHY -->
+Run it yourself with an API key:
 
-Token compression has to remove *information the reader doesn't need*, not bytes. That is what tokcodec does, in graded levels.
+```bash
+uv run --extra bench python bench/fidelity/run.py --estimate   # cost first, no calls
+uv run --extra bench python bench/fidelity/run.py              # ~$5 on Sonnet 5, cached after
+```
+
+## What it never removes
+
+The safety contract, in plain terms:
+
+- **Level 1 is lossless in meaning.** Whitespace, ANSI codes, JSON layout, and exact duplicate lines only. Safe for anything, including edits.
+- **Every cut is marked.** `[×80]`, `...  # 42 lines`, `{ /* … 12 lines */ }`, `… [300 lines omitted]`. The model always knows where to look deeper.
+- **Failures survive.** The log codec keeps the head, the tail, and every line matching error, fail, exception, traceback, warning, or summary patterns, with a line of context.
+- **Outlines keep the map.** Imports, classes, every signature, the first docstring line. Python outlines are valid Python; JSON stays valid JSON.
+- **Edits read raw.** Levels 2 and 3 are for reading. The bundled skill tells Claude to read losslessly before editing, so `old_string` matches never fail on compressed text.
+- **Hooks fail open.** If `tokcodec` is missing or crashes, the original output and exit code are shown unchanged. `TOKCODEC_HOOK_DISABLE=1` turns everything off instantly.
+- **No telemetry, no network calls,** except the optional `--exact` token count you ask for.
 
 ## Levels
 
@@ -90,13 +117,14 @@ Token compression has to remove *information the reader doesn't need*, not bytes
 | 0 | raw | nothing | yes |
 | 1 | **lossless** | ANSI codes, `\r`, trailing whitespace, blank-line runs, JSON re-serialised compact, exact duplicate log lines → `[×N]` | yes |
 | 2 | **light** | + timestamps and long hex ids out of logs, near-duplicates collapsed, comments and docstrings out of code | no (whitespace differs) |
-| 3 | **heavy** | + function bodies → `...  # N lines` (Python) or `{ /* … N lines */ }` (JS/TS), indentation shrunk, logs cut to head + tail + every error/warning line with context, JSON arrays capped at 8 items and strings at 200 chars | no |
-
-Levels 2 and 3 are for *reading*. When an agent needs to change a file it should read it losslessly, and the bundled skill says so.
+| 3 | **heavy** | + function bodies → `...  # N lines` (Python) or `{ /* … N lines */ }` (brace languages), indentation shrunk, logs cut to head + tail + every error/warning line with context, JSON arrays capped at 8 items and strings at 200 chars | no |
 
 ## Supported languages
 
-`tokcodec langs` prints this table. Detection is by extension or filename first, then by content for pasted snippets.
+Outlines (level 3) for 14 languages, comment stripping for 21, plus JSON, log, diff and prose codecs. `tokcodec langs` prints the table. Detection is by extension or filename first, then by content for pasted snippets.
+
+<details>
+<summary>Full table</summary>
 
 | Kind | Languages | Comments out (L2) | Outline (L3) | How |
 |---|---|:---:|:---:|---|
@@ -128,6 +156,8 @@ Levels 2 and 3 are for *reading*. When an agent needs to change a file it should
 
 Anything unrecognised gets the `text` treatment, which is always safe. Want a language added? Brace languages need one line in `tokcodec/langs.py`; others need a small transform plus a test.
 
+</details>
+
 ## Usage
 
 ```bash
@@ -137,10 +167,10 @@ cat big.json | tokcodec - -k json -l 1
 tokcodec bench src/              # savings table for a whole directory
 tokcodec count FILE              # token count
 tokcodec why FILE                # the gzip table above, for any file
+tokcodec langs                   # supported kinds
 tokcodec install [--project] [--skill-only] [--uninstall] [--dry-run]
+tokcodec serve                   # MCP server over stdio (needs tokcodec[mcp])
 ```
-
-Kinds are auto-detected from extension and content: `python`, `js` (also ts/tsx/jsx), `json`, `log`, `diff`, `text`. Override with `-k`.
 
 Add `--exact` to count with Anthropic's `count_tokens` endpoint instead of the local proxy tokenizer. It is free and needs `ANTHROPIC_API_KEY` or an `ant auth login` profile.
 
@@ -155,17 +185,28 @@ print(r.tokens_before, r.tokens_after, r.steps)
 # 15089 231 ['lossless-text', 'log-fuzzy', 'log-truncate']
 ```
 
+### As an MCP server
+
+Any MCP client (Claude Code, Cursor, Zed, Claude Desktop) can call tokcodec directly:
+
+```bash
+uv tool install "tokcodec[mcp]"
+claude mcp add tokcodec -- tokcodec serve
+```
+
+Tools: `read_compact(path, level, kind)`, `compact_text(text, kind, level)`, `token_count(text)`. Each result starts with a one-line header giving the kind and before/after token counts.
+
 ## Claude Code integration
 
-`tokcodec install` sets up three things under `~/.claude/` (or `./.claude/` with `--project`):
+Two ways in. The plugin (above) is the simplest. `tokcodec install` does the same by hand under `~/.claude/` (or `./.claude/` with `--project`). Either way you get:
 
 1. **A skill** that teaches Claude when to reach for tokcodec instead of reading a huge file whole, and which level to use.
-2. **A Bash hook** (`PreToolUse`) that rewrites noisy commands (`pytest`, `npm install`, `cargo build`, `git pull`, …) to pipe through `tokcodec - -k log -l 3`. Claude never sees the 900 lines of dots.
+2. **A Bash hook** (`PreToolUse`) that rewrites noisy commands (`pytest`, `npm install`, `cargo build`, `git pull`, …) so their output is captured, compressed with `tokcodec -k log -l 3`, and handed to Claude. Claude never sees the 900 lines of dots.
 3. **A Read hook** (`PreToolUse`) that stops whole-file reads above 64 KB and points Claude at `tokcodec file -l 3` for an outline, then ranged reads.
 
-Settings are merged, never overwritten, and `--uninstall` removes exactly what was added. Knobs: `TOKCODEC_HOOK_LEVEL=2|3`, `TOKCODEC_READ_MAX_KB=64`, `TOKCODEC_HOOK_DISABLE=1`.
+The hooks are registered as `tokcodec hook bash` and `tokcodec hook read`, nothing else: no interpreter path, no home-directory path, so the same configuration works on macOS, Linux and Windows. `tokcodec install` merges settings, never overwrites, and `--uninstall` removes exactly what was added. Knobs: `TOKCODEC_HOOK_LEVEL=2|3`, `TOKCODEC_READ_MAX_KB=64`, `TOKCODEC_HOOK_DISABLE=1`.
 
-Using Cursor, Codex, Aider or Gemini CLI? tokcodec is a plain stdin/stdout filter. Drop the text of [`SKILL.md`](tokcodec/assets/claude_code/SKILL.md) into your agent's instructions file and pipe away.
+Using Cursor, Codex, Aider or Gemini CLI? tokcodec is a plain stdin/stdout filter. Drop the text of [`SKILL.md`](tokcodec/assets/claude_code/SKILL.md) into your agent's instructions file and pipe away, or point the agent at the MCP server.
 
 ## How it works
 
@@ -176,7 +217,7 @@ Using Cursor, Codex, Aider or Gemini CLI? tokcodec is a plain stdin/stdout filte
 Three things to know:
 
 1. **It's a filter, not an editor.** tokcodec reads a file or a command's output and writes a shorter version to stdout. Nothing on disk changes. The compressed text exists only on its way into the model's context.
-2. **It shrinks tool results, not your conversation.** In Claude Code, every command output and every file read lands in the context window and on your bill. tokcodec makes those results smaller before they land. Your prompts and Claude's replies are untouched.
+2. **It shrinks tool results, not your conversation.** In Claude Code, every command output and every file read lands in the context window. tokcodec makes those results smaller before they land. Your prompts and Claude's replies are untouched.
 3. **Lossy levels are for reading.** Level 1 is safe for anything. Levels 2 and 3 change whitespace and drop detail, so an agent about to *edit* a file should read it losslessly. The bundled skill tells Claude exactly that.
 
 Under the hood:
@@ -192,23 +233,24 @@ Under the hood:
 - The default counter is tiktoken's `o200k_base`, because Anthropic doesn't publish Claude's tokenizer. Ratios transfer well; absolute numbers can differ by 10–30%. `--exact` gives real counts.
 - tokcodec does not replace prompt caching. Caching makes re-sent context cheap; tokcodec makes it smaller to begin with. Use both.
 - Outlines for brace languages come from a scanner, not a parser. It handles strings, comments and nested braces, but exotic syntax (Rust raw strings with `#`, C# verbatim strings with `""`) can occasionally confuse it. When it can't find a matching brace it leaves the code untouched rather than guessing.
+- Level 3 loses things on purpose. The fidelity benchmark exists to show exactly which things.
 
 ## Roadmap
 
 - [ ] Tree-sitter backend for exact outlines where the scanner falls short
 - [ ] Diff-aware mode: skeleton everything except the hunks that changed
 - [ ] Session-level dedupe: never send the same file twice in one conversation
-- [ ] `tokcodec serve`: an MCP server exposing `read_compact`
+- [ ] Real-task benchmark: SWE-bench-lite with and without the hooks, pass rate and total tokens
 - [ ] Learned importance scoring for log lines
 
 ## Contributing
 
 ```bash
-git clone https://github.com/YOUR_GITHUB/tokcodec && cd tokcodec
-uv sync && uv run pytest && uv run python bench/run.py
+git clone https://github.com/lnxinc/tokcodec && cd tokcodec
+uv sync --all-extras && make test && make bench && make smoke
 ```
 
-Every transform ships with a test that proves what it *keeps*: a failure line, a signature, valid JSON. See [CONTRIBUTING.md](CONTRIBUTING.md). Ideas and benchmark results from your own repos are very welcome in issues.
+Every transform ships with a test that proves what it *keeps*: a failure line, a signature, valid JSON. See [CONTRIBUTING.md](CONTRIBUTING.md) and [RELEASING.md](RELEASING.md). Ideas and benchmark results from your own repos are very welcome in issues.
 
 ## About
 

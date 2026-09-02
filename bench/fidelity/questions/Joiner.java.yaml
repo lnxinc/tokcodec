@@ -1,0 +1,50 @@
+sample: Joiner.java
+questions:
+  - id: joiner-01
+    type: structural
+    question: "What package is this class declared in?"
+    expected: "com.google.common.base"
+    level_expected_to_answer: 3
+    notes: "line 15"
+  - id: joiner-02
+    type: structural
+    question: "What is the full signature of the static factory method `on` that takes a `char`?"
+    expected: "public static Joiner on(char separator)"
+    level_expected_to_answer: 3
+    notes: "line 76"
+  - id: joiner-03
+    type: structural
+    question: "What is the declaration (modifiers and name) of the nested class inside `Joiner`?"
+    expected: "public static final class MapJoiner"
+    level_expected_to_answer: 3
+    notes: "line 341"
+  - id: joiner-04
+    type: structural
+    question: "What is the full signature of `withKeyValueSeparator` that takes a `String`?"
+    expected: "public MapJoiner withKeyValueSeparator(String keyValueSeparator)"
+    level_expected_to_answer: 3
+    notes: "line 316"
+  - id: joiner-05
+    type: detail
+    question: "Which bug id does the block comment cite for the Kotlin bug that motivates using `<? extends @Nullable Object>` instead of `<?>`?"
+    expected: "b/189937072"
+    level_expected_to_answer: 1
+    notes: "line 92 comment; L2 strips comments"
+  - id: joiner-06
+    type: detail
+    question: "In the private static helper `iterable(first, second, rest)`, what does the anonymous list's `size()` return?"
+    expected: "rest.length + 2"
+    level_expected_to_answer: 2
+    notes: "line 503, inside method body"
+  - id: joiner-07
+    type: value
+    question: "What is the exact `UnsupportedOperationException` message thrown when `withKeyValueSeparator` is called on a joiner returned by `skipNulls()`?"
+    expected: "can't use .skipNulls() with maps"
+    level_expected_to_answer: 2
+    notes: "line 295, inside skipNulls() body"
+  - id: joiner-08
+    type: value
+    question: "What is the exact exception message thrown when `skipNulls()` is called on a joiner already configured with `useForNull`?"
+    expected: "already specified useForNull"
+    level_expected_to_answer: 2
+    notes: "line 262, inside useForNull() body"

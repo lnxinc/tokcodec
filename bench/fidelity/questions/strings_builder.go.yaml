@@ -1,0 +1,50 @@
+sample: strings_builder.go
+questions:
+  - id: strings_builder-01
+    type: structural
+    question: "What is the full signature of the `WriteRune` method on `Builder`?"
+    expected: "func (b *Builder) WriteRune(r rune) (int, error)"
+    level_expected_to_answer: 3
+    notes: "grep -n 'func (b \\*Builder) WriteRune' strings_builder.go"
+  - id: strings_builder-02
+    type: structural
+    question: "What are the two fields of the `Builder` struct (name and type)?"
+    expected: "addr *Builder; buf []byte"
+    level_expected_to_answer: 3
+    notes: "struct definition survives L3 outline (lines 17-24)"
+  - id: strings_builder-03
+    type: structural
+    question: "Which four packages does this file import?"
+    expected: "internal/abi, internal/bytealg, unicode/utf8, unsafe"
+    level_expected_to_answer: 3
+    notes: "import block lines 7-12"
+  - id: strings_builder-04
+    type: structural
+    question: "What is the signature of the unexported `grow` method?"
+    expected: "func (b *Builder) grow(n int)"
+    level_expected_to_answer: 3
+    notes: "grep -n 'func (b \\*Builder) grow' strings_builder.go"
+  - id: strings_builder-05
+    type: detail
+    question: "Which Go issue number does the comment inside `copyCheck` cite as the reason for the escape-analysis workaround?"
+    expected: "23382"
+    level_expected_to_answer: 1
+    notes: "comment inside function body: 'See issue 23382.' (line 30); L2 strips comments"
+  - id: strings_builder-06
+    type: detail
+    question: "In `grow`, what expression is passed to `bytealg.MakeNoZero` to size the new buffer?"
+    expected: "2*cap(b.buf) + n"
+    level_expected_to_answer: 2
+    notes: "body-only logic, line 61; L3 replaces the body"
+  - id: strings_builder-07
+    type: value
+    question: "What is the exact panic message when `Grow` is called with a negative count?"
+    expected: "strings.Builder.Grow: negative count"
+    level_expected_to_answer: 2
+    notes: "grep -n 'negative count' strings_builder.go (line 72, inside body)"
+  - id: strings_builder-08
+    type: value
+    question: "What is the exact panic message raised by `copyCheck` when a non-zero Builder was copied by value?"
+    expected: "strings: illegal use of non-zero Builder copied by value"
+    level_expected_to_answer: 2
+    notes: "line 35, inside function body"

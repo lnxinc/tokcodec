@@ -1,0 +1,50 @@
+sample: argparse.py
+questions:
+  - id: argparse-01
+    type: structural
+    question: "What is the full signature of the method `add_argument` on `_ActionsContainer`?"
+    expected: "def add_argument(self, *args, **kwargs)"
+    level_expected_to_answer: 3
+    notes: "line 1506; signature survives the L3 outline"
+  - id: argparse-02
+    type: structural
+    question: "Which two classes does `ArgumentParser` inherit from?"
+    expected: "_AttributeHolder, _ActionsContainer"
+    level_expected_to_answer: 3
+    notes: "line 1841"
+  - id: argparse-03
+    type: structural
+    question: "Which parameters of `ArgumentParser.__init__` are keyword-only (declared after the bare `*`)?"
+    expected: "suggest_on_error, color"
+    level_expected_to_answer: 3
+    notes: "lines 1880-1882"
+  - id: argparse-04
+    type: structural
+    question: "What is the full signature of `FileType.__init__`?"
+    expected: "def __init__(self, mode='r', bufsize=-1, encoding=None, errors=None)"
+    level_expected_to_answer: 3
+    notes: "line 1355"
+  - id: argparse-05
+    type: detail
+    question: "According to the `ArgumentParser` class docstring, what is the default value of `prog`?"
+    expected: "os.path.basename(sys.argv[0])"
+    level_expected_to_answer: 1
+    notes: "line 1845-1846 docstring content beyond the first line; L2 strips docstrings"
+  - id: argparse-06
+    type: detail
+    question: "In `HelpFormatter.__init__`, how is `width` computed when it is passed as None?"
+    expected: "shutil.get_terminal_size().columns - 2"
+    level_expected_to_answer: 2
+    notes: "lines 176-179, inside method body"
+  - id: argparse-07
+    type: value
+    question: "What is the value of the module-level constant `SUPPRESS`?"
+    expected: "==SUPPRESS=="
+    level_expected_to_answer: 3
+    notes: "line 96"
+  - id: argparse-08
+    type: value
+    question: "What exit status does `ArgumentParser.error` pass to `self.exit`?"
+    expected: "2"
+    level_expected_to_answer: 2
+    notes: "line 2782: self.exit(2, ...), inside method body"

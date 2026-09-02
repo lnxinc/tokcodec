@@ -1,0 +1,50 @@
+sample: LinkedList.cs
+questions:
+  - id: linkedlist-01
+    type: structural
+    question: "Which interfaces does `LinkedList<T>` implement?"
+    expected: "ICollection<T>, ICollection, IReadOnlyCollection<T>, ISerializable, IDeserializationCallback"
+    level_expected_to_answer: 3
+    notes: "line 15"
+  - id: linkedlist-02
+    type: structural
+    question: "What namespace is `LinkedList<T>` declared in?"
+    expected: "System.Collections.Generic"
+    level_expected_to_answer: 3
+    notes: "line 9"
+  - id: linkedlist-03
+    type: structural
+    question: "What is the full signature of the `AddAfter` overload that takes a value and returns a node?"
+    expected: "public LinkedListNode<T> AddAfter(LinkedListNode<T> node, T value)"
+    level_expected_to_answer: 3
+    notes: "line 74"
+  - id: linkedlist-04
+    type: structural
+    question: "What is the declaration line of the nested `Enumerator` type, including the interfaces it implements?"
+    expected: "public struct Enumerator : IEnumerator<T>, IEnumerator, ISerializable, IDeserializationCallback"
+    level_expected_to_answer: 3
+    notes: "line 503"
+  - id: linkedlist-05
+    type: detail
+    question: "What does the trailing comment on the `VersionName`, `CountName` and `ValuesName` constants warn?"
+    expected: "Do not rename (binary serialization)"
+    level_expected_to_answer: 1
+    notes: "lines 24-26 comments; L2 strips comments"
+  - id: linkedlist-06
+    type: detail
+    question: "What is the `Debug.Assert` message in `InternalRemoveNode` that checks `node.list == this`?"
+    expected: "Deleting the node from another list!"
+    level_expected_to_answer: 2
+    notes: "line 399, inside method body"
+  - id: linkedlist-07
+    type: value
+    question: "What string value is the private const `ValuesName` set to?"
+    expected: "Data"
+    level_expected_to_answer: 3
+    notes: "line 26 class-level const field"
+  - id: linkedlist-08
+    type: value
+    question: "Which `SR` resource string is used for the `InvalidOperationException` thrown by `ValidateNode` when the node belongs to a different list?"
+    expected: "SR.ExternalLinkedListNode"
+    level_expected_to_answer: 2
+    notes: "line 436, inside method body"

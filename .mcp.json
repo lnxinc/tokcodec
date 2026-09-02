@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "tokcodec": { "command": "tokcodec", "args": ["serve"] }
+  }
+}

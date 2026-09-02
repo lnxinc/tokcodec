@@ -1,0 +1,50 @@
+sample: Strings.kt
+questions:
+  - id: strings-01
+    type: structural
+    question: "What package is this file in?"
+    expected: "kotlin.text"
+    level_expected_to_answer: 3
+    notes: "line 9"
+  - id: strings-02
+    type: structural
+    question: "What JVM class name is set by the file-level `@file:kotlin.jvm.JvmName` annotation?"
+    expected: "StringsKt"
+    level_expected_to_answer: 3
+    notes: "line 7 file-level annotation"
+  - id: strings-03
+    type: structural
+    question: "What is the full signature of `padStart` defined on `CharSequence`?"
+    expected: "public fun CharSequence.padStart(length: Int, padChar: Char = ' '): CharSequence"
+    level_expected_to_answer: 3
+    notes: "line 217"
+  - id: strings-04
+    type: structural
+    question: "What is the full signature of the public `split` overload on `CharSequence` that takes vararg `String` delimiters?"
+    expected: "public fun CharSequence.split(vararg delimiters: String, ignoreCase: Boolean = false, limit: Int = 0): List<String>"
+    level_expected_to_answer: 3
+    notes: "line 1313"
+  - id: strings-05
+    type: detail
+    question: "In the `DelimitedRangesSequence` iterator, what do the three `nextState` values -1, 0 and 1 mean according to the inline comment?"
+    expected: "-1 for unknown, 0 for done, 1 for continue"
+    level_expected_to_answer: 1
+    notes: "line 1191 comment inside a body; L2 strips comments"
+  - id: strings-06
+    type: detail
+    question: "In the private `split(delimiter: String, ignoreCase, limit)` function, what initial capacity expression is passed to `ArrayList<String>`?"
+    expected: "if (isLimited) limit.coerceAtMost(10) else 10"
+    level_expected_to_answer: 2
+    notes: "line 1368, inside function body"
+  - id: strings-07
+    type: value
+    question: "What is the exact message used by `requireNonNegativeLimit` when the limit is negative?"
+    expected: "Limit must be non-negative, but was $limit"
+    level_expected_to_answer: 2
+    notes: "line 1283, expression body; L3 replaces the body"
+  - id: strings-08
+    type: value
+    question: "What message is given in the `@Deprecated` annotation on `String.toUpperCase()`?"
+    expected: "Use uppercase() instead."
+    level_expected_to_answer: 3
+    notes: "line 18 annotation on a declaration (not a body)"

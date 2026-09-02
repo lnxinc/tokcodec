@@ -1,0 +1,50 @@
+sample: api_response.json
+questions:
+  - id: api_response-01
+    type: structural
+    question: "What are the top-level keys of the JSON object, in order?"
+    expected: "ok, page, per_page, total, data"
+    level_expected_to_answer: 3
+    notes: "head -c 200 api_response.json"
+  - id: api_response-02
+    type: structural
+    question: "What keys does each element of the `data` array have, in order?"
+    expected: "id, email, name, created_at, plan, flags, tags"
+    level_expected_to_answer: 3
+    notes: "first array item lines 7-16"
+  - id: api_response-03
+    type: structural
+    question: "What is the shape of the `flags` object on each user (key names and value types)?"
+    expected: "{beta: boolean, mfa: boolean}"
+    level_expected_to_answer: 3
+    notes: "every item has flags with exactly keys beta and mfa, both booleans"
+  - id: api_response-04
+    type: structural
+    question: "What is the type of the `tags` field, and which distinct values appear in it?"
+    expected: "array of strings; values a, b, c"
+    level_expected_to_answer: 3
+    notes: "tags is [] or a prefix of [a, b, c]; visible within the first 8 items"
+  - id: api_response-05
+    type: value
+    question: "What is the value of the top-level `total` field?"
+    expected: "8342"
+    level_expected_to_answer: 3
+    notes: "line 5"
+  - id: api_response-06
+    type: value
+    question: "What is the value of the top-level `per_page` field?"
+    expected: "120"
+    level_expected_to_answer: 3
+    notes: "line 4"
+  - id: api_response-07
+    type: detail
+    question: "What is the `plan` of the user with id `usr_00010`?"
+    expected: "free"
+    level_expected_to_answer: 2
+    notes: "grep -n -A4 'usr_00010' api_response.json; item index 10 is beyond L3's 8-item array cap"
+  - id: api_response-08
+    type: detail
+    question: "What are the `tags` of the last user in `data` (id `usr_00119`)?"
+    expected: '["a", "b", "c"]'
+    level_expected_to_answer: 2
+    notes: "grep -n -A12 'usr_00119' api_response.json; index 119, dropped by L3 array cap"
