@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/hero.svg" alt="tokcodec turns a 15,089-token pytest log into 231 tokens with the failure intact" width="820">
+  <img src="assets/hero.svg" alt="tokcodec turns a 21,000-token pytest log into 342 tokens with the failure intact" width="820">
 </p>
 
 <h1 align="center">tokcodec</h1>
@@ -7,7 +7,7 @@
 <p align="center">
   <b>A codec for LLM context.</b><br>
   Video codecs throw away what the eye can't see. tokcodec throws away what the model doesn't need.<br>
-  A 15,089-token test run becomes 231 tokens. The failure is still there.
+  A 21,000-token test run becomes 342 tokens. The failure is still there.
 </p>
 
 <p align="center">
@@ -66,7 +66,7 @@ Token compression has to remove *information the reader doesn't need*, not bytes
 
 ## Benchmark
 
-Real files, reproducible with `uv run python bench/run.py`. Details in [`bench/RESULTS.md`](bench/RESULTS.md).
+Real files, reproducible by anyone with `uv run python bench/run.py` (proxy tokenizer, no API key needed). Details in [`bench/RESULTS.md`](bench/RESULTS.md). The same table counted with Anthropic's `count_tokens` is in [`bench/RESULTS-exact.md`](bench/RESULTS-exact.md): Claude's tokenizer counts about 1.5× more tokens on code, and the savings percentages agree within three points (−45% / −80% exact vs −48% / −83% proxy at levels 2 and 3).
 
 <!-- BENCH -->
 | file | kind | what it is | raw tokens | L1 lossless | L2 light | L3 heavy |
@@ -182,7 +182,7 @@ from tokcodec import encode
 r = encode(open("app.log").read(), level=3, kind="log")
 print(r.encoded)
 print(r.tokens_before, r.tokens_after, r.steps)
-# 15089 231 ['lossless-text', 'log-fuzzy', 'log-truncate']
+# 15089 231 ['lossless-text', 'log-fuzzy', 'log-truncate']   (proxy counts; --exact gives Claude's)
 ```
 
 ### As an MCP server
@@ -230,7 +230,7 @@ Under the hood:
 
 ## Honest limits
 
-- The default counter is tiktoken's `o200k_base`, because Anthropic doesn't publish Claude's tokenizer. Ratios transfer well; absolute numbers can differ by 10–30%. `--exact` gives real counts.
+- The default counter is tiktoken's `o200k_base`, because Anthropic doesn't publish Claude's tokenizer. Measured against `count_tokens`, the proxy undercounts Claude tokens by about a third on code while the savings percentages agree within three points. Headline numbers in this README are exact; `--exact` gives you the same.
 - tokcodec does not replace prompt caching. Caching makes re-sent context cheap; tokcodec makes it smaller to begin with. Use both.
 - Outlines for brace languages come from a scanner, not a parser. It handles strings, comments and nested braces, but exotic syntax (Rust raw strings with `#`, C# verbatim strings with `""`) can occasionally confuse it. When it can't find a matching brace it leaves the code untouched rather than guessing.
 - Level 3 loses things on purpose. The fidelity benchmark exists to show exactly which things.

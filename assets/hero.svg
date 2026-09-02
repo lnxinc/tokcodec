@@ -25,5 +25,5 @@
 
   <rect x="24" y="346" width="772" height="50" rx="8" fill="#0b1220" stroke="#334155"/>
   <text x="40" y="367" fill="#94a3b8">[tokcodec kind=log level=3]</text>
-  <text x="40" y="387"><tspan fill="#f87171" font-weight="bold">15,089 tokens</tspan><tspan fill="#94a3b8">  →  </tspan><tspan fill="#4ade80" font-weight="bold">231 tokens</tspan><tspan fill="#94a3b8">   (−98%)   nothing you needed is gone</tspan></text>
+  <text x="40" y="387"><tspan fill="#f87171" font-weight="bold">21,000 tokens</tspan><tspan fill="#94a3b8">  →  </tspan><tspan fill="#4ade80" font-weight="bold">342 tokens</tspan><tspan fill="#94a3b8">   (−98%)   nothing you needed is gone</tspan></text>
 </svg>

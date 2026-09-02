@@ -1,4 +1,4 @@
-{"version": 2, "width": 100, "height": 30, "timestamp": 1756800000, "title": "tokcodec: pytest output, 15,089 tokens -> 231", "env": {"SHELL": "/bin/zsh", "TERM": "xterm-256color"}}
+{"version": 2, "width": 100, "height": 30, "timestamp": 1756800000, "title": "tokcodec: pytest output, 21,000 tokens -> 342", "env": {"SHELL": "/bin/zsh", "TERM": "xterm-256color"}}
 [0.03, "o", "\u001b[32m$\u001b[0m "]
 [0.075, "o", "p"]
 [0.12, "o", "y"]
@@ -53,7 +53,7 @@
 [3.22, "o", " "]
 [3.265, "o", "-"]
 [3.665, "o", "\r\n"]
-[4.165, "o", "15089\r\n"]
+[4.165, "o", "21000\r\n"]
 [4.195, "o", "\u001b[32m$\u001b[0m "]
 [4.24, "o", "p"]
 [4.285, "o", "y"]
@@ -112,7 +112,7 @@
 [7.25, "o", "INFO  tests/test_api_8.py::test_case_80 PASSED  (80ms)  [×320]\r\n"]
 [7.31, "o", "npm WARN deprecated lodash@4.17.0: this version is no longer supported  [×30]\r\n"]
 [7.37, "o", "========================= 1 failed, 411 passed in 42.11s =========================\r\n"]
-[7.87, "o", "\u001b[33m[tokcodec kind=log level=3 15089→231 tok (-98%) steps=lossless-text,log-fuzzy]\u001b[0m\r\n"]
+[7.87, "o", "\u001b[33m[tokcodec kind=log level=3 21000→342 tok (-98%) steps=lossless-text,log-fuzzy]\u001b[0m\r\n"]
 [9.37, "o", "\r\n"]
 [9.47, "o", "\u001b[2mSame failure, same summary. 98% fewer tokens in Claude's context.\u001b[0m\r\n"]
 [11.47, "o", ""]

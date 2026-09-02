@@ -2,7 +2,7 @@
 """Reproducible benchmark. Writes bench/RESULTS.md and refreshes the table in README.md.
 
     uv run python bench/run.py            # proxy tokenizer (tiktoken o200k_base)
-    uv run python bench/run.py --exact    # Anthropic count_tokens (needs credentials)
+    uv run python bench/run.py --exact    # Anthropic count_tokens (needs credentials) -> bench/RESULTS-exact.md
 """
 from __future__ import annotations
 
@@ -91,6 +91,12 @@ def main() -> int:
     results = (f"# Benchmark results\n\nGenerated {stamp} by `bench/run.py`. Counter: {counter}.\n\n"
                f"## Savings per level\n\n{table}\n\n## Bytes are not tokens\n\n"
                f"Measured on `samples/decoder.py`.\n\n{why_table}\n")
+    if a.exact:
+        # exact counts go to their own file; README/RESULTS.md stay on the proxy so anyone can regenerate them
+        results = results.replace("# Benchmark results", "# Benchmark results (exact Claude token counts)", 1)
+        (ROOT / "bench" / "RESULTS-exact.md").write_text(results, encoding="utf-8")
+        print(results)
+        return 0
     (ROOT / "bench" / "RESULTS.md").write_text(results, encoding="utf-8")
 
     readme = ROOT / "README.md"

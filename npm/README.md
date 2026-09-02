@@ -1,6 +1,6 @@
 # tokcodec
 
-**A codec for LLM context.** Cuts the tokens Claude Code and other AI coding tools spend on logs, JSON and source files by 30–95%, lossless or lossy by level. Same failure line, same signatures, a fraction of the tokens.
+**A codec for LLM context.** Cuts the tokens Claude Code and other AI coding tools spend on logs, JSON and source files by 30–95%, lossless or lossy by level. A 21,000-token pytest run becomes 342 tokens with the failure intact (counted with Anthropic's `count_tokens`).
 
 ```bash
 npx tokcodec why path/to/any/file.py     # see the token math for yourself
