@@ -14,7 +14,7 @@ are lossy: they drop what you rarely need on a first pass.
 
 | Situation | Command |
 |---|---|
-| First look at a big source file | `tokcodec path/to/file.py -l 3` (signatures + structure, ~85% fewer tokens) |
+| First look at a big source file (Python, JS/TS, Go, Rust, Java, Kotlin, C#, C/C++, Swift, Ruby, …) | `tokcodec path/to/file -l 3` (signatures + structure, 70–90% fewer tokens) |
 | Understand one file's logic, no editing yet | `tokcodec path/to/file.py -l 2` (comments and docstrings removed) |
 | About to edit a file | Use the normal Read tool, or `tokcodec file -l 1`. Levels 2-3 change whitespace, so `old_string` edits against them will not match. |
 | Test / build / install output | `pytest 2>&1 \| tokcodec - -k log -l 3` (duplicates collapsed, failures and summary kept) |

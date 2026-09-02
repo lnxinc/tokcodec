@@ -45,12 +45,20 @@ Real files, reproducible with `uv run python bench/run.py`. Details in [`bench/R
 <!-- BENCH -->
 | file | kind | what it is | raw tokens | L1 lossless | L2 light | L3 heavy |
 |---|---|---|---:|---:|---:|---:|
+| `Arr.php` | php | Laravel `Collections/Arr.php` | 6,008 | 6,008 (−0%) | 3,458 (−42%) | 933 (−84%) |
+| `Joiner.java` | java | Guava `Joiner.java` | 4,373 | 4,373 (−0%) | 2,007 (−54%) | 1,180 (−73%) |
+| `LinkedList.cs` | csharp | .NET runtime `LinkedList.cs` | 3,599 | 3,599 (−0%) | 3,354 (−7%) | 1,495 (−58%) |
+| `Strings.kt` | kotlin | Kotlin stdlib `text/Strings.kt` | 13,964 | 13,963 (−0%) | 7,449 (−47%) | 4,181 (−70%) |
 | `api_response.json` | json | pretty-printed REST response, 120 records | 11,138 | 6,983 (−37%) | 6,983 (−37%) | 493 (−96%) |
 | `argparse.py` | python | CPython stdlib `argparse.py` | 21,198 | 21,195 (−0%) | 15,688 (−26%) | 3,501 (−83%) |
 | `decoder.py` | python | CPython stdlib `json/decoder.py` | 3,159 | 3,159 (−0%) | 2,105 (−33%) | 599 (−81%) |
+| `linkhash.h` | c | json-c `linkhash.h` | 3,197 | 3,197 (−0%) | 907 (−72%) | 893 (−72%) |
 | `npm_module.js` | js | `glob/dist/esm/walker.js` from npm | 2,851 | 2,851 (−0%) | 2,520 (−12%) | 520 (−82%) |
 | `pytest_run.log` | log | pytest run, 412 tests, ANSI colour, timestamps, 1 failure | 15,089 | 15,073 (−0%) | 231 (−98%) | 231 (−98%) |
-| **total** | | | **53,435** | **49,261 (−8%)** | **27,527 (−48%)** | **5,344 (−90%)** |
+| `set.rb` | ruby | Ruby stdlib `set.rb` | 7,310 | 7,310 (−0%) | 2,795 (−62%) | 935 (−87%) |
+| `strings_builder.go` | go | Go stdlib `strings/builder.go` | 865 | 865 (−0%) | 433 (−50%) | 249 (−71%) |
+| `vec_deque_iter.rs` | rust | Rust `alloc` `vec_deque/iter.rs` | 1,577 | 1,577 (−0%) | 1,350 (−14%) | 965 (−39%) |
+| **total** | | | **94,328** | **90,153 (−4%)** | **49,280 (−48%)** | **16,175 (−83%)** |
 <!-- /BENCH -->
 
 ## Why not just gzip it?
@@ -80,6 +88,40 @@ Token compression has to remove *information the reader doesn't need*, not bytes
 | 3 | **heavy** | + function bodies → `...  # N lines` (Python) or `{ /* … N lines */ }` (JS/TS), indentation shrunk, logs cut to head + tail + every error/warning line with context, JSON arrays capped at 8 items and strings at 200 chars | no |
 
 Levels 2 and 3 are for *reading*. When an agent needs to change a file it should read it losslessly, and the bundled skill says so.
+
+## Supported languages
+
+`tokcodec langs` prints this table. Detection is by extension or filename first, then by content for pasted snippets.
+
+| Kind | Languages | Comments out (L2) | Outline (L3) | How |
+|---|---|:---:|:---:|---|
+| `python` | Python | ✓ | ✓ | `ast` + `tokenize`; skeletons are valid Python, first docstring line kept |
+| `js` | JavaScript, TypeScript, JSX, TSX | ✓ | ✓ | brace scanner; arrow functions and class methods included |
+| `go` | Go | ✓ | ✓ | brace scanner |
+| `rust` | Rust | ✓ | ✓ | brace scanner; `impl` blocks stay, `fn` bodies collapse |
+| `java` | Java | ✓ | ✓ | brace scanner; generics, `throws`, annotations kept |
+| `kotlin` | Kotlin | ✓ | ✓ | brace scanner |
+| `csharp` | C# | ✓ | ✓ | brace scanner; Allman braces supported |
+| `c` | C, C++, Objective-C | ✓ | ✓ | brace scanner; preprocessor lines kept |
+| `swift` | Swift | ✓ | ✓ | brace scanner |
+| `dart` | Dart | ✓ | ✓ | brace scanner |
+| `scala` | Scala | ✓ | ✓ | brace scanner |
+| `php` | PHP | ✓ | ✓ | brace scanner; `//`, `#` and `/* */` comments, `#[Attribute]` kept |
+| `zig` | Zig | ✓ | ✓ | brace scanner |
+| `ruby` | Ruby, Gemfile, Rakefile | ✓ | ✓ | `def … end` by indentation |
+| `shell` | sh, bash, zsh, fish, PowerShell, Dockerfile, Makefile | ✓ | – | string-aware `#` comments |
+| `config` | YAML, TOML, INI, .env, .properties | ✓ | – | string-aware `#` comments |
+| `perl` | Perl, R, Elixir | ✓ | – | string-aware `#` comments |
+| `sql` | SQL | ✓ | – | `--` and `/* */` comments |
+| `lua` | Lua, Haskell | ✓ | – | `--` comments |
+| `css` | CSS, SCSS, Less | ✓ | – | `/* */` and `//` comments |
+| `markup` | HTML, XML, SVG, Vue, Svelte | ✓ | – | `<!-- -->` comments |
+| `json` | JSON, JSONL | – | sampled | parsed and re-emitted; arrays capped, strings trimmed, still valid JSON |
+| `log` | logs, test/build/install output | – | truncated | dedupe, timestamps out, keep head + tail + every error/warning line |
+| `diff` | unified diffs | – | – | lossless text pass only |
+| `text` | Markdown, reStructuredText, prose | – | – | lossless text pass only |
+
+Anything unrecognised gets the `text` treatment, which is always safe. Want a language added? Brace languages need one line in `tokcodec/langs.py`; others need a small transform plus a test.
 
 ## Usage
 
@@ -135,7 +177,8 @@ Three things to know:
 Under the hood:
 
 - **Python** goes through `ast` and `tokenize`, so a `#` inside a string is never mistaken for a comment and skeletons always parse.
-- **JS/TS** uses a small scanner that tracks strings, template literals and comments while matching braces.
+- **Brace languages** (JS/TS, Go, Rust, Java, Kotlin, C#, C/C++, Swift, Dart, Scala, PHP, Zig) share one scanner that tracks strings, template literals and comments while matching braces. Control statements and type declarations are never collapsed, only function bodies.
+- **Ruby** outlines `def … end` blocks by indentation.
 - **Logs** dedupe on a fuzzy key (digits and durations normalised), then keep head, tail and every line matching error/fail/warn/exception/traceback/summary patterns, with one line of context.
 - **JSON** is parsed and re-emitted, so output is always valid JSON.
 
@@ -143,11 +186,11 @@ Under the hood:
 
 - The default counter is tiktoken's `o200k_base`, because Anthropic doesn't publish Claude's tokenizer. Ratios transfer well; absolute numbers can differ by 10–30%. `--exact` gives real counts.
 - tokcodec does not replace prompt caching. Caching makes re-sent context cheap; tokcodec makes it smaller to begin with. Use both.
-- Languages other than Python and JS/TS get the text and log treatment only, for now.
+- Outlines for brace languages come from a scanner, not a parser. It handles strings, comments and nested braces, but exotic syntax (Rust raw strings with `#`, C# verbatim strings with `""`) can occasionally confuse it. When it can't find a matching brace it leaves the code untouched rather than guessing.
 
 ## Roadmap
 
-- [ ] More languages via tree-sitter (Go, Rust, Java, C#)
+- [ ] Tree-sitter backend for exact outlines where the scanner falls short
 - [ ] Diff-aware mode: skeleton everything except the hunks that changed
 - [ ] Session-level dedupe: never send the same file twice in one conversation
 - [ ] `tokcodec serve`: an MCP server exposing `read_compact`

@@ -4,6 +4,7 @@
   tokcodec bench PATH... [--exact]                          table of savings per level
   tokcodec count FILE                                        token count
   tokcodec why                                               show why gzip/abbreviation backfire
+  tokcodec langs                                             supported languages
   tokcodec install [--project] [--skill-only] [--uninstall]  set up the Claude Code skill + hooks
 """
 from __future__ import annotations
@@ -14,6 +15,7 @@ from pathlib import Path
 
 from . import __version__
 from .count import count_tokens
+from .langs import KINDS, LANGS
 from .pipeline import encode
 
 
@@ -70,6 +72,14 @@ def cmd_bench(a):
     print(f"\ncounter: {'anthropic count_tokens (exact)' if a.exact else 'tiktoken o200k_base (proxy)'}")
 
 
+def cmd_langs(a):
+    print(f"{'kind':<9}{'language':<34}{'comments':<10}outline (L3)")
+    for l in LANGS.values():
+        sk = {"python": "ast", "brace": "yes", "ruby": "yes", "none": "-"}[l.skeleton]
+        cm = {"none": "-"}.get(l.comments, "yes")
+        print(f"{l.name:<9}{l.label:<34}{cm:<10}{sk}   {' '.join(l.exts)} {' '.join(l.files)}".rstrip())
+
+
 def cmd_count(a):
     print(count_tokens(_read(a.file), exact=a.exact))
 
@@ -119,7 +129,8 @@ def main(argv=None):
     e = sub.add_parser("encode", help="encode a file or stdin (-)")
     e.add_argument("file")
     e.add_argument("-l", "--level", type=int, default=2, choices=[0, 1, 2, 3])
-    e.add_argument("-k", "--kind", default="auto", choices=["auto", "text", "log", "json", "python", "js", "diff"])
+    e.add_argument("-k", "--kind", default="auto", choices=KINDS, metavar="KIND",
+                   help="content kind (default auto). see `tokcodec langs`")
     e.add_argument("-s", "--stats", action="store_true", help="print token stats to stderr")
     e.add_argument("--head", type=int, default=40)
     e.add_argument("--tail", type=int, default=60)
@@ -132,6 +143,9 @@ def main(argv=None):
 
     c = sub.add_parser("count", help="count tokens")
     c.add_argument("file"); common(c); c.set_defaults(fn=cmd_count)
+
+    lg = sub.add_parser("langs", help="list supported languages and kinds")
+    lg.set_defaults(fn=cmd_langs)
 
     w = sub.add_parser("why", help="show why classic compression backfires on tokens")
     w.add_argument("file", nargs="?"); common(w); w.set_defaults(fn=cmd_why)
@@ -147,7 +161,7 @@ def main(argv=None):
     # allow `tokcodec FILE` shorthand
     if argv is None:
         argv = sys.argv[1:]
-    if argv and argv[0] not in {"encode", "bench", "count", "why", "install", "-h", "--help", "--version"}:
+    if argv and argv[0] not in {"encode", "bench", "count", "why", "install", "langs", "-h", "--help", "--version"}:
         argv = ["encode", *argv]
     a = ap.parse_args(argv)
     if not a.cmd:

@@ -27,6 +27,14 @@ DESC = {
     "argparse.py": "CPython stdlib `argparse.py`",
     "decoder.py": "CPython stdlib `json/decoder.py`",
     "npm_module.js": "`glob/dist/esm/walker.js` from npm",
+    "strings_builder.go": "Go stdlib `strings/builder.go`",
+    "vec_deque_iter.rs": "Rust `alloc` `vec_deque/iter.rs`",
+    "Joiner.java": "Guava `Joiner.java`",
+    "LinkedList.cs": ".NET runtime `LinkedList.cs`",
+    "Strings.kt": "Kotlin stdlib `text/Strings.kt`",
+    "linkhash.h": "json-c `linkhash.h`",
+    "set.rb": "Ruby stdlib `set.rb`",
+    "Arr.php": "Laravel `Collections/Arr.php`",
 }
 
 

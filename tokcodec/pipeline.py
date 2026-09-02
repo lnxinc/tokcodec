@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 
 from .count import count_tokens
 from .detect import detect
+from .langs import LANGS, is_code
 from .transforms import code, jsonx, logs, text as T
 
 
@@ -64,18 +65,16 @@ def encode(
     if level >= 2:
         if k == "log":
             step("log-fuzzy", logs.level2)
-        elif k in ("python", "js"):
+        elif is_code(k):
             step("strip-comments", code.strip_comments, k)
             step("lossless-text", T.lossless)
-        elif k == "text":
-            pass  # prose: nothing safe to remove beyond level 1
 
     if level >= 3:
         if k == "log":
             step("log-truncate", logs.smart_truncate,
                  head=opts.get("head", 40), tail=opts.get("tail", 60),
                  max_lines=opts.get("max_lines", 200))
-        elif k in ("python", "js"):
+        elif is_code(k) and LANGS[k].skeleton != "none":
             # skeleton needs original line numbers; rebuild from raw
             out, steps[:] = raw, []
             step("strip-comments", code.strip_comments_only, k)

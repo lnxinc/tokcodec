@@ -42,7 +42,7 @@
   </g>
   <text x="450" y="300" fill="#94a3b8" text-anchor="middle" font-size="11">Every level marks what it removed:</text>
   <text x="450" y="318" fill="#fbbf24" text-anchor="middle" font-size="11" font-family="ui-monospace, Menlo, monospace">[×80]   ...  # 42 lines   … [300 omitted]</text>
-  <text x="450" y="350" fill="#64748b" text-anchor="middle" font-size="11">Python via ast · JS via scanner · JSON parsed</text>
+  <text x="450" y="350" fill="#64748b" text-anchor="middle" font-size="11">Python via ast · 13 brace languages via scanner · Ruby · JSON parsed</text>
 
   <line x1="580" y1="196" x2="642" y2="196" stroke="#4ade80" stroke-width="2" marker-end="url(#arrg)"/>
   <text x="611" y="186" fill="#4ade80" text-anchor="middle" font-size="11">stdout</text>
