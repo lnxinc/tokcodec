@@ -1,0 +1,21 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: uv sync --dev
+      - run: uv run pytest -q
+      - run: uv run python bench/run.py > /dev/null
+      - run: git diff --exit-code README.md bench/RESULTS.md || (echo "benchmark table out of date; run bench/run.py" && exit 1)

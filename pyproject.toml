@@ -1,0 +1,41 @@
+[project]
+name = "tokpack"
+version = "0.1.0"
+description = "A codec for LLM context: cut the tokens AI coding tools burn on logs, JSON and source by 30-95%"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+keywords = ["llm", "tokens", "claude", "claude-code", "prompt-compression", "context-window", "cli"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Text Processing :: Filters",
+]
+
+dependencies = [
+    "anthropic>=1.3.0",
+    "tiktoken>=0.14.0",
+]
+
+[project.scripts]
+tokpack = "tokpack.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["tokpack"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/YOUR_GITHUB/tokpack"
+Issues = "https://github.com/YOUR_GITHUB/tokpack/issues"
