@@ -24,7 +24,15 @@ def load(path: Path) -> dict[str, tuple[int, int, int, int]]:
     return out
 
 
+def _utf8_stdout():
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
+
+
 def main() -> int:
+    _utf8_stdout()
     est = load(ROOT / "bench" / "RESULTS.md")
     act = load(ROOT / "bench" / "RESULTS-exact.md")
     names = [n for n in est if n in act]

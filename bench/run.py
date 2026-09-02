@@ -38,11 +38,19 @@ DESC = {
 }
 
 
+def _utf8_stdout():
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
+
+
 def pct(a: int, b: int) -> str:
     return f"−{(1 - b / a) * 100:.0f}%" if a else "n/a"
 
 
 def main() -> int:
+    _utf8_stdout()
     ap = argparse.ArgumentParser()
     ap.add_argument("--exact", action="store_true")
     a = ap.parse_args()
