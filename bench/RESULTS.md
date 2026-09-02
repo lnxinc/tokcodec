@@ -28,7 +28,7 @@ Measured on `samples/decoder.py`.
 | variant | bytes | tokens | vs original | model can read it? |
 |---|---:|---:|---:|---|
 | original | 12,873 | 3,159 | +0% | yes |
-| gzip + base64 | 4,876 | 3,297 | +4% | no, the model cannot inflate gzip |
+| gzip + base64 | 4,876 | 3,294 | +4% | no, the model cannot inflate gzip |
 | vowels removed | 11,075 | 3,908 | +24% | partly, and it guesses wrong |
 | tokcodec L1 | 12,866 | 3,159 | +0% | yes, lossless |
 | tokcodec L2 | 7,996 | 2,105 | -33% | yes, comments gone |

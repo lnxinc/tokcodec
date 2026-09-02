@@ -75,7 +75,7 @@ def main() -> int:
     base = count_tokens(src, a.exact)
     why_rows = [
         ("original", src, "yes"),
-        ("gzip + base64", base64.b64encode(gzip.compress(src.encode())).decode(), "no, the model cannot inflate gzip"),
+        ("gzip + base64", base64.b64encode(gzip.compress(src.encode(), mtime=0)).decode(), "no, the model cannot inflate gzip"),
         ("vowels removed", re.sub(r"(?<=\w)[aeiou]", "", src), "partly, and it guesses wrong"),
         ("tokcodec L1", encode(src, 1, count=False).encoded, "yes, lossless"),
         ("tokcodec L2", encode(src, 2, count=False).encoded, "yes, comments gone"),

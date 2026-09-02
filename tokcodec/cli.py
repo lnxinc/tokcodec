@@ -91,7 +91,7 @@ def cmd_why(a):
     raw = _read(a.file) if a.file else (Path(__file__).parent / "pipeline.py").read_text(encoding="utf-8")
     variants = {
         "original": raw,
-        "gzip+base64": base64.b64encode(gzip.compress(raw.encode())).decode(),
+        "gzip+base64": base64.b64encode(gzip.compress(raw.encode(), mtime=0)).decode(),
         "zlib+base85": base64.b85encode(zlib.compress(raw.encode(), 9)).decode(),
         "drop vowels": re.sub(r"(?<=\w)[aeiou]", "", raw),
         "no spaces": re.sub(r"[ \t]+", " ", raw),

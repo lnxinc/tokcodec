@@ -18,7 +18,7 @@ jobs:
           python-version: ${{ matrix.python }}
       - run: uv sync --dev --all-extras
       - run: uv run pytest -q
-      - run: uv run scripts/smoke.sh
+      - run: uv run bash scripts/smoke.sh
         shell: bash
   versions-and-bench:
     runs-on: ubuntu-latest
