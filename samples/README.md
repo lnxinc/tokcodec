@@ -16,3 +16,5 @@
 | `api_response.json` | synthetic, generated for this benchmark | MIT (this repo) |
 
 They are included unmodified so the numbers in `bench/RESULTS.md` are reproducible against real-world code.
+
+The LNX Inc. logo in `assets/` is a trademark of LNX Inc. and is not covered by the MIT license.

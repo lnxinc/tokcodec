@@ -11,6 +11,11 @@
 </p>
 
 <p align="center">
+  <a href="https://lnxinc.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/lnx-logo-dark.png"><img src="assets/lnx-logo.png" alt="LNX Inc." height="36"></picture></a><br>
+  <sub>Built and maintained by <a href="https://lnxinc.com">LNX Inc.</a> · free of charge for everyone, forever · MIT licensed</sub>
+</p>
+
+<p align="center">
   <a href="https://github.com/YOUR_GITHUB/tokcodec/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/YOUR_GITHUB/tokcodec/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://pypi.org/project/tokcodec/"><img alt="PyPI" src="https://img.shields.io/pypi/v/tokcodec?color=blue"></a>
   <a href="https://www.npmjs.com/package/tokcodec"><img alt="npm" src="https://img.shields.io/npm/v/tokcodec?color=cb3837"></a>
@@ -205,6 +210,14 @@ uv sync && uv run pytest && uv run python bench/run.py
 
 Every transform ships with a test that proves what it *keeps*: a failure line, a signature, valid JSON. See [CONTRIBUTING.md](CONTRIBUTING.md). Ideas and benchmark results from your own repos are very welcome in issues.
 
+## About
+
+tokcodec is provided by <a href="https://lnxinc.com"><b>LNX Inc.</b></a> free of charge for everyone. No paid tier, no telemetry, no sign-up. If it saves you tokens, a star on the repo and a link back are all we ask.
+
+<p align="center">
+  <a href="https://lnxinc.com"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/lnx-logo-dark.png"><img src="assets/lnx-logo.png" alt="LNX Inc." height="48"></picture></a>
+</p>
+
 ## License
 
-MIT
+MIT © [LNX Inc.](https://lnxinc.com)
