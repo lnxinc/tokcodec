@@ -7,7 +7,7 @@
       "name": "tokcodec",
       "description": "Cut the tokens Claude Code spends on logs, JSON and source files by 30-95%.",
       "source": { "type": "directory", "path": "." },
-      "version": "0.1.0"
+      "version": "0.1.1"
     }
   ]
 }

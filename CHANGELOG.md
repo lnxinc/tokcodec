@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-09-02
+
+### Fixed
+- `npx tokcodec` recursed into itself: npx puts the package's own `tokcodec` shim on PATH, and the launcher mistook it for an installed tokcodec. The launcher now ignores shims of itself. npm `0.1.0` is affected; `0.1.1` supersedes it.
+- Release workflow skips the npm publish when that version already exists on the registry.
+
 ## [0.1.0] - 2026-09-02
 
 ### Added
@@ -23,5 +29,6 @@ All notable changes to this project are documented here. The format follows
 ### Security
 - Hooks fail open: if `tokcodec` is missing or fails, the original command output and exit code are shown unchanged. `TOKCODEC_HOOK_DISABLE=1` turns them off.
 
-[Unreleased]: https://github.com/lnxinc/tokcodec/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/lnxinc/tokcodec/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/lnxinc/tokcodec/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/lnxinc/tokcodec/releases/tag/v0.1.0

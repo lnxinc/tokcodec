@@ -8,4 +8,4 @@ from .pipeline import encode, Result
 from .count import count_tokens
 
 __all__ = ["encode", "Result", "count_tokens"]
-__version__ = "0.1.0"
+__version__ = "0.1.1"

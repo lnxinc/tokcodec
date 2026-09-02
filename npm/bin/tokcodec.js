@@ -21,8 +21,25 @@ const win = process.platform === 'win32';
 const exe = win ? '.exe' : '';
 
 function has(cmd) {
-  const r = spawnSync(win ? 'where' : 'sh', win ? [cmd] : ['-c', `command -v ${cmd}`], { stdio: 'ignore' });
+  const r = spawnSync(win ? 'where' : 'sh', win ? [cmd] : ['-c', `command -v ${cmd}`], { encoding: 'utf8' });
   return r.status === 0;
+}
+// A real `tokcodec` on PATH, ignoring npm/npx shims of this very launcher
+// (npx puts the package's own bin on PATH, which would recurse forever).
+function realTokcodec() {
+  const r = spawnSync(win ? 'where' : 'sh', win ? ['tokcodec'] : ['-c', 'command -v tokcodec'], { encoding: 'utf8' });
+  if (r.status !== 0) return null;
+  const self = fs.realpathSync(__filename);
+  for (const line of r.stdout.split(/\r?\n/).map((l) => l.trim()).filter(Boolean)) {
+    if (/node_modules|_npx/.test(line)) continue;
+    try { if (fs.realpathSync(line) === self) continue; } catch (_) {}
+    try {
+      const head = fs.readFileSync(line, 'utf8').slice(0, 400);
+      if (/tokcodec\.js/.test(head)) continue;  // .cmd / shell shim pointing at this launcher
+    } catch (_) {}
+    return line;
+  }
+  return null;
 }
 function run(cmd, cmdArgs) {
   const r = spawnSync(cmd, cmdArgs, { stdio: 'inherit', shell: win });
@@ -72,7 +89,8 @@ async function bootstrapUv() {
 }
 
 async function main() {
-  if (has('tokcodec')) return run('tokcodec', args);
+  const real = realTokcodec();
+  if (real) return run(real, args);
   if (has('uvx')) return run('uvx', ['--from', spec, 'tokcodec', ...args]);
   if (has('pipx')) return run('pipx', ['run', '--spec', spec, 'tokcodec', ...args]);
   if (process.env.TOKCODEC_NO_BOOTSTRAP) {

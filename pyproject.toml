@@ -1,6 +1,6 @@
 [project]
 name = "tokcodec"
-version = "0.1.0"
+version = "0.1.1"
 description = "A codec for LLM context: cut the tokens AI coding tools burn on logs, JSON and source by 30-95%"
 readme = "README.md"
 authors = [{ name = "LNX Inc." }]

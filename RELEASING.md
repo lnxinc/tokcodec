@@ -21,6 +21,8 @@ both registries use trusted publishing (OIDC).
 
 ### npm
 
+(Done for 0.1.0 on 2026-09-02; trusted publishing is configured. Kept for reference.)
+
 1. Create the package once by hand so trusted publishing can be attached to it:
    ```bash
    cd npm && npm login && npm publish --access public
@@ -55,7 +57,11 @@ needed globally; the release job requests `contents: write` itself.
    git tag vX.Y.Z && git push origin main vX.Y.Z
    ```
 4. Watch the Release workflow. PyPI must succeed before npm runs, because the
-   npm launcher pins `tokcodec@X.Y.Z` on PyPI.
+   npm launcher pins `tokcodec@X.Y.Z` on PyPI. The npm step skips itself if that
+   version is already on the registry.
+5. `scripts/cold-test.sh --published`. Always test the npm path *through `npx`*,
+   not by running `bin/tokcodec.js` directly: 0.1.0 shipped a launcher that recursed
+   into its own npx shim, and only the real `npx` path reproduces that.
 
 ## Verifying from cold
 

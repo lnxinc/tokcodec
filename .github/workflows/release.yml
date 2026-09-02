@@ -45,7 +45,14 @@ jobs:
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
       - run: npm install -g npm@latest   # trusted publishing needs npm >= 11.5.1
-      - run: cd npm && npm publish --provenance --access public
+      - name: Publish unless this version is already on npm
+        run: |
+          v=$(node -p "require('./npm/package.json').version")
+          if npm view "tokcodec@$v" version >/dev/null 2>&1; then
+            echo "tokcodec@$v already on npm, skipping"
+          else
+            cd npm && npm publish --provenance --access public
+          fi
   github-release:
     needs: [pypi, npm]
     runs-on: ubuntu-latest
