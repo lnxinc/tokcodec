@@ -58,7 +58,7 @@ jobs:
           if npm view "tokcodec@$v" version >/dev/null 2>&1; then
             echo "tokcodec@$v already on npm, skipping"
           else
-            cd npm && npm publish --provenance --access public --loglevel verbose 2>&1 | grep -vE 'notice [0-9.]+k?B|Tarball' || exit 1
+            cd npm && npm publish --provenance --access public --loglevel verbose
           fi
   github-release:
     needs: [pypi, npm]
