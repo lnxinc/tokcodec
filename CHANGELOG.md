@@ -6,6 +6,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- `--cost` flag: prints $ per read for Opus 5, Sonnet 5 and Haiku 4.5 next to the token stats.
+- `bench/compare.py` and `bench/ESTIMATE-VS-ACTUAL.md`: tiktoken estimate vs Anthropic `count_tokens` per sample, plus a per-model cost table; the README carries the same block.
+
 ## [0.1.1] - 2026-09-02
 
 ### Fixed

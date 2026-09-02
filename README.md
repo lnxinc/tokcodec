@@ -87,6 +87,42 @@ Real files, reproducible by anyone with `uv run python bench/run.py` (proxy toke
 | **total** | | | **94,328** | **90,153 (−4%)** | **49,280 (−48%)** | **16,175 (−83%)** |
 <!-- /BENCH -->
 
+## Estimated vs actual savings
+
+`tokcodec` prints an estimate by default (tiktoken, no API key). `--exact` asks Anthropic's `count_tokens` for the real number. Here is how the two compare on every sample at level 3, and what the actual saving is worth at current input prices. Regenerate with `bench/compare.py`; full file in [`bench/ESTIMATE-VS-ACTUAL.md`](bench/ESTIMATE-VS-ACTUAL.md).
+
+<!-- COMPARE -->
+| file | estimate raw → L3 | actual raw → L3 | estimated saving | actual saving | estimate error |
+|---|---:|---:|---:|---:|---:|
+| `Arr.php` | 6,008 → 933 | 8,120 → 1,487 | −84% | −82% | +2.8 pts |
+| `Joiner.java` | 4,373 → 1,180 | 7,097 → 2,197 | −73% | −69% | +4.0 pts |
+| `LinkedList.cs` | 3,599 → 1,495 | 6,123 → 2,669 | −58% | −56% | +2.1 pts |
+| `Strings.kt` | 13,964 → 4,181 | 23,307 → 7,772 | −70% | −67% | +3.4 pts |
+| `api_response.json` | 11,138 → 493 | 14,069 → 694 | −96% | −95% | +0.5 pts |
+| `argparse.py` | 21,198 → 3,501 | 33,232 → 5,783 | −83% | −83% | +0.9 pts |
+| `decoder.py` | 3,159 → 599 | 4,758 → 1,038 | −81% | −78% | +2.9 pts |
+| `linkhash.h` | 3,197 → 893 | 5,425 → 1,688 | −72% | −69% | +3.2 pts |
+| `npm_module.js` | 2,851 → 520 | 4,683 → 937 | −82% | −80% | +1.8 pts |
+| `pytest_run.log` | 15,089 → 231 | 21,000 → 342 | −98% | −98% | +0.1 pts |
+| `set.rb` | 7,310 → 935 | 10,152 → 1,495 | −87% | −85% | +1.9 pts |
+| `strings_builder.go` | 865 → 249 | 1,415 → 393 | −71% | −72% | -1.0 pts |
+| `vec_deque_iter.rs` | 1,577 → 965 | 2,536 → 1,646 | −39% | −35% | +3.7 pts |
+| **total** | **94,328 → 16,175** | **141,917 → 28,141** | **−83%** | **−80%** | **+2.7 pts** |
+
+| model | input price | read all 13 files raw | read them at level 3 | saved per pass | saved per 1,000 passes |
+|---|---:|---:|---:|---:|---:|
+| claude-opus-5 | $5.00/M | $0.710 | $0.141 | $0.569 | $569 |
+| claude-sonnet-5 | $2.00/M | $0.284 | $0.056 | $0.228 | $228 |
+| claude-haiku-4-5 | $1.00/M | $0.142 | $0.028 | $0.114 | $114 |
+<!-- /COMPARE -->
+
+Two things to take from this. Claude's tokenizer counts about 1.5× more tokens than the proxy on code, so the estimate understates the absolute numbers, but the *percentage saved* is what you decide on and it agrees within a few points. And for a flat-rate plan the dollars are beside the point: the 80% is context headroom you keep.
+
+```bash
+tokcodec FILE -l 3 -s --cost           # estimate, with $ per read for Opus 5 / Sonnet 5 / Haiku 4.5
+tokcodec FILE -l 3 -s --cost --exact   # the same with Claude's real counts
+```
+
 ## Fidelity: does the model still get it right?
 
 Token savings alone is a party trick. The question is whether a model reading the compressed version still answers correctly. [`bench/fidelity/`](bench/fidelity) holds 104 questions with checkable answers, 8 per sample, deliberately including questions that levels 2 and 3 are *expected* to fail (comment contents, logic inside a collapsed body, the 10th item of a capped array). Each question is declared up front with the highest level it should survive, then asked at every level and graded. Results, Claude Sonnet 5, full report with every wrong answer unedited in [`bench/FIDELITY.md`](bench/FIDELITY.md):

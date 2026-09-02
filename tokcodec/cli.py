@@ -34,9 +34,14 @@ def cmd_encode(a):
     sys.stdout.write(r.encoded)
     if not r.encoded.endswith("\n"):
         sys.stdout.write("\n")
-    if a.stats:
+    if a.stats or a.cost:
+        counter = "exact" if a.exact else "proxy"
         print(f"[tokcodec kind={r.kind} level={r.level} {r.tokens_before}→{r.tokens_after} tok "
-              f"(-{r.saved_pct:.0f}%) steps={','.join(r.steps) or 'none'}]", file=sys.stderr)
+              f"(-{r.saved_pct:.0f}%, {counter}) steps={','.join(r.steps) or 'none'}]", file=sys.stderr)
+    if a.cost:
+        from .pricing import cost_line
+        note = "" if a.exact else "  (proxy counts; add --exact for Claude's tokenizer, ~1.5x on code)"
+        print(f"[cost per read  {cost_line(r.tokens_before, r.tokens_after)}{note}]", file=sys.stderr)
 
 
 def _iter_files(paths):
@@ -139,6 +144,7 @@ def main(argv=None):
     e.add_argument("-k", "--kind", default="auto", choices=KINDS, metavar="KIND",
                    help="content kind (default auto). see `tokcodec langs`")
     e.add_argument("-s", "--stats", action="store_true", help="print token stats to stderr")
+    e.add_argument("-c", "--cost", action="store_true", help="also print $ per read for Opus 5 / Sonnet 5 / Haiku 4.5")
     e.add_argument("--head", type=int, default=40)
     e.add_argument("--tail", type=int, default=60)
     e.add_argument("--max-lines", type=int, default=200)

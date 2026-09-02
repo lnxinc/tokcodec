@@ -29,7 +29,7 @@ jobs:
           python-version: "3.12"
       - run: uv sync --dev --all-extras
       - run: uv run python scripts/check_versions.py
-      - run: uv run python bench/run.py > /dev/null
-      - run: git diff --exit-code README.md bench/RESULTS.md || (echo "benchmark table out of date; run bench/run.py" && exit 1)
+      - run: uv run python bench/run.py > /dev/null && uv run python bench/compare.py > /dev/null
+      - run: git diff --exit-code README.md bench/RESULTS.md bench/ESTIMATE-VS-ACTUAL.md || (echo "benchmark tables out of date; run bench/run.py and bench/compare.py" && exit 1)
       - name: npm launcher parses and runs
         run: node --check npm/bin/tokcodec.js && PATH="$PWD/.venv/bin:$PATH" node npm/bin/tokcodec.js --version
