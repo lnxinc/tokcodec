@@ -5,6 +5,7 @@ name: Release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:   # re-run the publish steps for the current version (already-published artifacts are skipped)
 permissions:
   contents: read
 jobs:
@@ -16,7 +17,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: uv sync --dev
-      - run: uv run python scripts/check_versions.py "${GITHUB_REF_NAME}"
+      - run: |
+          case "$GITHUB_REF_NAME" in v*) uv run python scripts/check_versions.py "$GITHUB_REF_NAME" ;; *) uv run python scripts/check_versions.py ;; esac
       - run: uv run pytest -q
   pypi:
     needs: check
@@ -31,6 +33,8 @@ jobs:
           python-version: "3.12"
       - run: uv build
       - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
   npm:
     needs: pypi   # the launcher pins tokcodec@<version> on PyPI, so PyPI must land first
     runs-on: ubuntu-latest
@@ -45,6 +49,10 @@ jobs:
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
       - run: npm install -g npm@latest   # trusted publishing needs npm >= 11.5.1
+      - name: Show the OIDC identity npm will see (no secrets)
+        run: |
+          tok=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=npm:registry.npmjs.org" | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).value")
+          echo "$tok" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null | node -p "const c=JSON.parse(require('fs').readFileSync(0,'utf8')); ({repository:c.repository, repository_owner:c.repository_owner, workflow_ref:c.workflow_ref, environment:c.environment, ref:c.ref, event_name:c.event_name})"
       - name: Publish unless this version is already on npm
         run: |
           v=$(node -p "require('./npm/package.json').version")
